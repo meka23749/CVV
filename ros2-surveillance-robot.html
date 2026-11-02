@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ROS2 Surveillance Robot · Autonomous Perception</title>
+  <style>
+    :root{--bg:#0b0f19;--muted:#9fb0c7;--text:#e8eef7;--accent:#7aa2ff;--accent2:#63d3ff;--border:rgba(255,255,255,.08);--radius:16px;--shadow:0 10px 30px rgba(0,0,0,.35);--max:1050px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% 0%,rgba(122,162,255,.20),transparent 60%),radial-gradient(900px 500px at 90% 10%,rgba(99,211,255,.16),transparent 55%),var(--bg);color:var(--text);line-height:1.6;}
+    a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
+    header,main,footer{max-width:var(--max);margin:auto;padding:32px 20px}
+    .hcard{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin-bottom:18px;}
+    h1,h2,h3{margin:0 0 10px;color:var(--accent);letter-spacing:.2px}
+    h1{font-size:clamp(24px,3vw,36px)}h2{font-size:18px}h3{font-size:16px;color:var(--accent2)}
+    p{margin:0 0 10px}.muted{color:var(--muted)}
+    table{width:100%;border-collapse:collapse;margin-top:10px;border-radius:14px;border:1px solid rgba(255,255,255,.10);}
+    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:10px 12px;text-align:left;vertical-align:top;}
+    th{color:var(--muted);font-weight:600;background:rgba(255,255,255,.03)}
+    code{background:rgba(255,255,255,.06);padding:3px 6px;border-radius:6px;font-size:.95em;}
+    .skills-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+    .skill-tag{background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.25);color:var(--accent);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;}
+    .context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px;}
+    .context-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;}
+    .context-item .icon{font-size:22px;margin-bottom:8px;}.context-item h3{font-size:14px;margin:0 0 4px;color:var(--accent2);}.context-item p{font-size:13px;color:var(--muted);margin:0;}
+    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px;}
+    .metric-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;text-align:center;}
+    .metric-card .value{font-size:26px;font-weight:700;color:var(--accent);display:block;}.metric-card .label{font-size:12px;color:var(--muted);margin-top:4px;}
+    pre{margin:10px 0;overflow:auto;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.28);color:var(--text);font-size:13px;line-height:1.6;}
+    .success{background:rgba(99,255,162,.07);border-left:3px solid #63ffa2;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#a3ffcc;margin-top:14px;}
+    .warn-note{background:rgba(255,107,107,.07);border-left:3px solid #ff6b6b;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#ffb3b3;margin-top:14px;}
+    .screenshot-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px;}
+    .screenshot-item{border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.10);}
+    .screenshot-item img{width:100%;display:block;}
+    .screenshot-item .caption{padding:8px 12px;background:rgba(0,0,0,.3);font-size:12px;color:var(--muted);}
+    .ausblick-list{list-style:none;margin:12px 0 0;padding:0;}
+    .ausblick-list li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14.5px;}
+    .ausblick-list li:last-child{border-bottom:none;}
+    .ausblick-list .step{min-width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.15);border:1px solid rgba(122,162,255,.3);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+    footer{text-align:center;color:var(--muted);font-size:12.5px;padding-bottom:30px;}
+  </style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:1000;background:rgba(11,15,25,.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);">
+  <ul style="list-style:none;margin:0;padding:10px 0;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+    <li><a href="weitere.html" style="color:rgba(232,238,247,.88);font-weight:800;padding:6px 14px;border-radius:999px;text-decoration:none;font-size:14px;display:inline-block;background:linear-gradient(135deg,rgba(122,162,255,.25),rgba(99,211,255,.18));border:1px solid rgba(122,162,255,.22);">Portfolio</a></li>
+  </ul>
+</nav>
+
+<header>
+  <h1>ROS2 Surveillance Robot · Autonomous Perception</h1>
+  <p class="muted" style="font-size:15px;margin-top:6px;">
+    Autonomes industrielles Überwachungssystem mit ROS2 Jazzy — 6 Nodes kommunizieren
+    über Topics, OpenCV-Echtzeit-Anomalieerkennung, autonome STOP/CONTINUE-Entscheidungen
+    und RViz2-Visualisierung der Roboterposition und erkannten Anomalien.
+  </p>
+  <a href="https://github.com/meka23749/ros2-surveillance-robot" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 18px;border-radius:999px;background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.28);color:#7aa2ff;font-size:14px;font-weight:700;text-decoration:none;">
+    <svg height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub Repository
+  </a>
+</header>
+
+<main>
+
+
+
+<section class="hcard">
+  <h2>1 - Architektur</h2>
+
+  <svg width="100%" viewBox="0 0 680 480" role="img" style="margin:16px 0;">
+    <title>ROS2 Surveillance Robot Architektur</title>
+    <desc>6 ROS2 Nodes kommunizieren ueber 5 Topics. robot_navigator publiziert robot/pose, camera_sensor publiziert camera/image_raw, anomaly_detector publiziert detection/result, surveillance_manager publiziert robot/command, visualizer zeigt OpenCV Fenster, rviz_publisher zeigt MarkerArray in RViz2</desc>
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <!-- robot_navigator -->
+    <rect x="20" y="20" width="180" height="60" rx="12" fill="rgba(127,119,221,.10)" stroke="rgba(127,119,221,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#AFA9EC" x="110" y="45" text-anchor="middle" dominant-baseline="central">robot_navigator</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="110" y="63" text-anchor="middle" dominant-baseline="central">Waypoint navigation</text>
+
+    <!-- camera_sensor -->
+    <rect x="20" y="140" width="180" height="60" rx="12" fill="rgba(127,119,221,.10)" stroke="rgba(127,119,221,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#AFA9EC" x="110" y="165" text-anchor="middle" dominant-baseline="central">camera_sensor</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="110" y="183" text-anchor="middle" dominant-baseline="central">Simulated camera images</text>
+
+    <!-- Arrows from navigator and camera to center -->
+    <line x1="200" y1="50" x2="290" y2="110" stroke="rgba(127,119,221,.6)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#9fb0c7" x="220" y="78">/robot/pose</text>
+
+    <line x1="200" y1="170" x2="290" y2="140" stroke="rgba(127,119,221,.6)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#9fb0c7" x="210" y="165">/camera/image_raw</text>
+
+    <!-- anomaly_detector -->
+    <rect x="250" y="100" width="180" height="60" rx="12" fill="rgba(186,117,23,.10)" stroke="rgba(186,117,23,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#FAC775" x="340" y="125" text-anchor="middle" dominant-baseline="central">anomaly_detector</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="340" y="143" text-anchor="middle" dominant-baseline="central">OpenCV HSV detection</text>
+
+    <!-- Arrow detector to manager -->
+    <line x1="430" y1="130" x2="480" y2="130" stroke="rgba(186,117,23,.6)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#9fb0c7" x="432" y="122">/detection/result</text>
+
+    <!-- surveillance_manager -->
+    <rect x="480" y="100" width="180" height="60" rx="12" fill="rgba(240,149,117,.10)" stroke="rgba(240,149,117,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#F09595" x="570" y="125" text-anchor="middle" dominant-baseline="central">surveillance_manager</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="570" y="143" text-anchor="middle" dominant-baseline="central">Autonomous decisions</text>
+
+    <!-- Arrow manager to navigator -->
+    <line x1="480" y1="110" x2="210" y2="55" stroke="rgba(240,149,117,.6)" stroke-width="1.5" fill="none" marker-end="url(#arrow)" stroke-dasharray="4 3"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="10" fill="#9fb0c7" x="330" y="75">/robot/command</text>
+
+    <!-- visualizer -->
+    <rect x="20" y="280" width="180" height="60" rx="12" fill="rgba(29,158,117,.10)" stroke="rgba(29,158,117,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#5DCAA5" x="110" y="305" text-anchor="middle" dominant-baseline="central">visualizer</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="110" y="323" text-anchor="middle" dominant-baseline="central">OpenCV live window</text>
+
+    <!-- rviz_publisher -->
+    <rect x="480" y="280" width="180" height="60" rx="12" fill="rgba(29,158,117,.10)" stroke="rgba(29,158,117,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#5DCAA5" x="570" y="305" text-anchor="middle" dominant-baseline="central">rviz_publisher</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="570" y="323" text-anchor="middle" dominant-baseline="central">MarkerArray for RViz2</text>
+
+    <!-- Arrows to visualizer and rviz -->
+    <line x1="200" y1="175" x2="110" y2="278" stroke="rgba(29,158,117,.5)" stroke-width="1" fill="none" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+    <line x1="430" y1="140" x2="570" y2="278" stroke="rgba(29,158,117,.5)" stroke-width="1" fill="none" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+    <line x1="480" y1="140" x2="570" y2="278" stroke="rgba(29,158,117,.5)" stroke-width="1" fill="none" marker-end="url(#arrow)" stroke-dasharray="3 3"/>
+
+    <!-- Output boxes -->
+    <rect x="20" y="390" width="180" height="50" rx="10" fill="rgba(29,158,117,.06)" stroke="rgba(29,158,117,.20)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#5DCAA5" x="110" y="418" text-anchor="middle" dominant-baseline="central">OpenCV Window</text>
+
+    <rect x="480" y="390" width="180" height="50" rx="10" fill="rgba(29,158,117,.06)" stroke="rgba(29,158,117,.20)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#5DCAA5" x="570" y="418" text-anchor="middle" dominant-baseline="central">RViz2 3D View</text>
+
+    <line x1="110" y1="340" x2="110" y2="388" stroke="rgba(29,158,117,.5)" stroke-width="1" fill="none" marker-end="url(#arrow)"/>
+    <line x1="570" y1="340" x2="570" y2="388" stroke="rgba(29,158,117,.5)" stroke-width="1" fill="none" marker-end="url(#arrow)"/>
+  </svg>
+
+  <div class="metrics-grid">
+    <div class="metric-card"><span class="value">6</span><div class="label">ROS2 Nodes</div></div>
+    <div class="metric-card"><span class="value">5</span><div class="label">ROS2 Topics</div></div>
+    <div class="metric-card"><span class="value">30%</span><div class="label">Anomalierate</div></div>
+    <div class="metric-card"><span class="value">2</span><div class="label">Bugs behoben</div></div>
+  </div>
+</section>
+
+<section class="hcard">
+  <h2>2 - Live Visualisierung</h2>
+  <p>Zwei gleichzeitige Ansichten — die Kamerasicht und die räumliche Übersicht:</p>
+
+  <div class="screenshot-grid">
+    <div class="screenshot-item">
+      <img src="https://raw.githubusercontent.com/meka23749/ros2-surveillance-robot/main/docs/screenshots/screenshot_01_system_ok.png" alt="System OK — keine Anomalie" onerror="this.style.background='rgba(255,255,255,0.05)';this.style.height='200px'"/>
+      <div class="caption">OpenCV — Normalbetrieb: Pièces conformes (grün), System OK</div>
+    </div>
+    <div class="screenshot-item">
+      <img src="https://raw.githubusercontent.com/meka23749/ros2-surveillance-robot/main/docs/screenshots/screenshot_02_anomaly_detected.png" alt="Anomalie erkannt" onerror="this.style.background='rgba(255,255,255,0.05)';this.style.height='200px'"/>
+      <div class="caption">OpenCV — Anomalie erkannt: rote Bordure, Bounding Box, Confidence 0.48</div>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;" class="screenshot-item">
+    <img src="https://raw.githubusercontent.com/meka23749/ros2-surveillance-robot/main/docs/screenshots/screenshot_rviz2.png" alt="RViz2 Visualisierung" onerror="this.style.background='rgba(255,255,255,0.05)';this.style.height='300px'"/>
+    <div class="caption">RViz2 — Roboterposition (blauer Pfeil), Waypoints (grüne Zylinder), erkannte Anomalien (rote Sphären)</div>
+  </div>
+</section>
+
+<section class="hcard">
+  <h2>3 - ROS2 Topics</h2>
+  <table>
+    <thead><tr><th>Topic</th><th>Typ</th><th>Publisher</th><th>Subscriber</th></tr></thead>
+    <tbody>
+      <tr><td><code>/robot/pose</code></td><td>Pose2D</td><td>robot_navigator</td><td>camera_sensor, surveillance_manager, rviz_publisher</td></tr>
+      <tr><td><code>/camera/image_raw</code></td><td>Image</td><td>camera_sensor</td><td>anomaly_detector, visualizer</td></tr>
+      <tr><td><code>/detection/result</code></td><td>String (JSON)</td><td>anomaly_detector</td><td>surveillance_manager, rviz_publisher</td></tr>
+      <tr><td><code>/robot/command</code></td><td>String</td><td>surveillance_manager</td><td>robot_navigator</td></tr>
+      <tr><td><code>/visualization/markers</code></td><td>MarkerArray</td><td>rviz_publisher</td><td>RViz2</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="hcard">
+  <h2>4 - Autonome Entscheidungslogik</h2>
+  <pre>
+Camera publiziert Bild alle 1s (30% Anomalie-Wahrscheinlichkeit)
+        |
+AnomalyDetector: HSV-Segmentierung → rote Formen → Confidence Score
+        |
+SurveillanceManager:
+  confidence > 0.3 → STOP  → Robot haelt an aktueller Position
+  zone clear       → CONTINUE → Robot setzt Patrouille fort
+        |
+Visualizer: OpenCV-Fenster mit Bounding Boxes und Status
+RViz2:      Anomalie-Marker an exakter Position in 3D-Raum</pre>
+
+  <div class="warn-note">
+    ⚠️ <strong>Bug 1 — Confidence Threshold:</strong> surveillance_manager hatte Schwelle 0.5,
+    aber detector meldete 0.48 — alle Anomalien wurden verpasst (0/N erkannt).
+    Fix: Schwelle auf 0.3 gesenkt.
+  </div>
+  <div class="warn-note" style="margin-top:8px;">
+    ⚠️ <strong>Bug 2 — flake8 Import Order:</strong> ROS2 verwendet google-style Import-Reihenfolge
+    (I100, I201, Q000). Durch CI-Pipeline in 3 Fix-Commits iterativ behoben.
+  </div>
+  <div class="success">✅ Nach allen Fixes: CI grün, alle Tests bestanden, System läuft stabil.</div>
+</section>
+
+<section class="hcard">
+  <h2>5 - Tech Stack</h2>
+  <div class="skills-row">
+    <span class="skill-tag">ROS2 Jazzy</span>
+    <span class="skill-tag">Python</span>
+    <span class="skill-tag">OpenCV</span>
+    <span class="skill-tag">RViz2</span>
+    <span class="skill-tag">Publisher / Subscriber</span>
+    <span class="skill-tag">MarkerArray</span>
+    <span class="skill-tag">cv_bridge</span>
+    <span class="skill-tag">colcon</span>
+    <span class="skill-tag">GitHub Actions CI</span>
+    <span class="skill-tag">WSL2 Ubuntu 24.04</span>
+    <span class="skill-tag">Autonome Entscheidung</span>
+    <span class="skill-tag">Computer Vision</span>
+  </div>
+</section>
+
+<section class="hcard">
+  <h2>6 - Ausblick</h2>
+  <ul class="ausblick-list">
+    <li><span class="step">1</span><div><strong>Nav2 Integration</strong><br><span class="muted">Ersetzen der manuellen Waypoint-Navigation durch den ROS2 Nav2 Stack — autonome Pfadplanung und Hinderniserkennung.</span></div></li>
+    <li><span class="step">2</span><div><strong>YOLO Object Detection</strong><br><span class="muted">Ersetzen der HSV-Segmentierung durch ein YOLO-Modell für robustere, modellbasierte Anomalieerkennung.</span></div></li>
+    <li><span class="step">3</span><div><strong>Gazebo Simulation</strong><br><span class="muted">Migration von der 2D-Simulation zu einer vollständigen 3D-Robotersimulation in Gazebo mit physikalischen Modellen.</span></div></li>
+    <li><span class="step">4</span><div><strong>Echte Hardware</strong><br><span class="muted">Deployment auf einem physischen Roboter (TurtleBot4 oder ähnlich) mit echter Kamera und LiDAR-Sensoren.</span></div></li>
+  </ul>
+</section>
+
+</main>
+
+<footer>© <span id="year"></span> – ROS2 Surveillance Robot | Steve Meka</footer>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
