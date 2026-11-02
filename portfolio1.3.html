@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diabetes Prediction · Machine Learning · MATLAB</title>
+
+  <style>
+    :root{
+      --bg:#0b0f19; --card:#121a2a; --muted:#9fb0c7; --text:#e8eef7;
+      --accent:#7aa2ff; --accent2:#63d3ff; --border:rgba(255,255,255,.08);
+      --radius:16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --max: 1050px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(122,162,255,.20), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(99,211,255,.16), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.6;
+    }
+    a{color:var(--accent2); text-decoration:none}
+    a:hover{text-decoration:underline}
+    header, main, footer{max-width:var(--max); margin:auto; padding:32px 20px}
+    .hcard{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:28px;
+      box-shadow: var(--shadow);
+      margin-bottom:18px;
+    }
+    h1,h2,h3{margin:0 0 10px; color:var(--accent); letter-spacing:.2px}
+    h1{font-size: clamp(24px, 3vw, 36px)}
+    h2{font-size: 18px}
+    h3{font-size: 16px; color: var(--accent2)}
+    p{margin: 0 0 10px}
+    .muted{color:var(--muted)}
+    ul{margin: 8px 0 12px 18px}
+    li{margin: 6px 0}
+    img{
+      max-width:100%;
+      height:auto;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      display:block;
+      margin: 14px auto;
+      background: #fff;
+    }
+    table{
+      width:100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      overflow:hidden;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.10);
+    }
+    th, td{
+      border-bottom:1px solid rgba(255,255,255,.10);
+      padding:10px 12px;
+      text-align:left;
+      vertical-align:top;
+    }
+    th{color:var(--muted); font-weight:600; background: rgba(255,255,255,.03)}
+
+    /* Skills tags */
+    .skills-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin-top:14px;
+    }
+    .skill-tag{
+      background: rgba(122,162,255,.12);
+      border: 1px solid rgba(122,162,255,.25);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* Kontext cards */
+    .context-grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .context-item{
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .context-item .icon{ font-size: 22px; margin-bottom: 8px; }
+    .context-item h3{ font-size: 14px; margin: 0 0 4px; color: var(--accent2); }
+    .context-item p{ font-size: 13px; color: var(--muted); margin: 0; }
+
+    /* Metrics */
+    .metrics-grid{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .metric-card{
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .metric-card .value{
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--accent);
+      display: block;
+    }
+    .metric-card .label{
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Ausblick list */
+    .ausblick-list{
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0;
+    }
+    .ausblick-list li{
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: 14.5px;
+    }
+    .ausblick-list li:last-child{ border-bottom: none; }
+    .ausblick-list .step{
+      min-width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(122,162,255,.15);
+      border: 1px solid rgba(122,162,255,.3);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* limit note */
+    .limit-note{
+      background: rgba(99,211,255,.07);
+      border-left: 3px solid var(--accent2);
+      border-radius: 0 10px 10px 0;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-top: 14px;
+    }
+
+    footer{
+      text-align:center;
+      color:var(--muted);
+      font-size:12.5px;
+      padding-bottom:30px;
+    }
+  </style>
+
+  <script>
+    window.MathJax = {
+      tex: {inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']]}
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+<nav style="
+  position:sticky; top:0; z-index:1000;
+  background:rgba(11,15,25,.75);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.08);
+">
+  <ul style="
+    list-style:none; margin:0; padding:10px 0;
+    display:flex; justify-content:center; gap:8px; flex-wrap:wrap;
+  ">
+    <li>
+      <a href="weitere.html" style="
+        color:rgba(232,238,247,.88); font-weight:800; letter-spacing:.3px;
+        padding:6px 14px; border-radius:999px; text-decoration:none;
+        font-size:14px; display:inline-block;
+        background:linear-gradient(135deg, rgba(122,162,255,.25), rgba(99,211,255,.18));
+        border:1px solid rgba(122,162,255,.22);
+      ">Portfolio</a>
+    </li>
+  </ul>
+</nav>
+
+<header>
+  <h1>Diabetes Prediction · Machine Learning · MATLAB</h1>
+  <p class="muted" style="font-size:15px; margin-top:6px;">
+    Entwicklung eines Neural Network Klassifikators zur Vorhersage von Diabetes(auf Basis klinischer Dataset 768 Patientinnen) : Training, Validierung und Evaluierung mit Confusion Matrix und ROC-Kurve.
+  </p>
+  <a href="https://github.com/meka23749/diabetes-prediction-matlab" target="_blank" style="
+    display: inline-flex; align-items: center; gap: 8px; margin-top: 14px;
+    padding: 8px 18px; border-radius: 999px;
+    background: rgba(122,162,255,.12); border: 1px solid rgba(122,162,255,.28);
+    color: #7aa2ff; font-size: 14px; font-weight: 700; text-decoration: none;
+  ">
+    <svg height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub Repository
+  </a>
+</header>
+
+<main>
+
+  <!-- ===== 0. KONTEXT & MOTIVATION ===== -->
+  
+
+  <!-- ===== 1. DATENBESCHREIBUNG ===== -->
+  <section class="hcard">
+    <h2>1 - Datenbeschreibung</h2>
+    <p>
+      Der verwendete Datensatz basiert auf diagnostischen Messwerten von Patientinnen
+      der Pima-Indianer-Bevölkerung (mindestens 21 Jahre alt).
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Einheit</th>
+          <th>Beschreibung</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Pregnancies</td><td>Anzahl</td><td>Anzahl der Schwangerschaften</td></tr>
+        <tr><td>Glucose</td><td>mg/dl</td><td>Plasmaglukose nach oralem Glukosetoleranztest</td></tr>
+        <tr><td>BloodPressure</td><td>mm Hg</td><td>Diastolischer Blutdruck</td></tr>
+        <tr><td>SkinThickness</td><td>mm</td><td>Dicke der Trizeps-Hautfalte</td></tr>
+        <tr><td>Insulin</td><td>μU/ml</td><td>Serum-Insulin 2h nach Nahrungsaufnahme</td></tr>
+        <tr><td>BMI</td><td>kg/m²</td><td>Body-Mass-Index</td></tr>
+        <tr><td>DiabetesPedigree</td><td>—</td><td>Maß für familiäre Diabetesbelastung</td></tr>
+        <tr><td>Age</td><td>Jahre</td><td>Alter der Patientin</td></tr>
+        <tr><td><strong>Outcome</strong></td><td>0 / 1</td><td><strong>0 = kein Diabetes, 1 = Diabetes</strong></td></tr>
+      </tbody>
+    </table>
+
+    <img src="images/dataset1.png" alt="Datensatz in MATLAB" />
+  </section>
+
+  <!-- ===== 2. MODELL ===== -->
+  <section class="hcard">
+    <h2>2 - Modellentwicklung</h2>
+    <p>
+      Das Modell basiert auf einem künstlichen Neuron mit Sigmoid-Aktivierungsfunktion —
+      dem Grundbaustein neuronaler Netze für binäre Klassifikation.
+    </p>
+
+    <img src="images/mode.png" alt="Künstliches Neuron" />
+
+    \[ y = f\left(\sum_{i=1}^{n} x_i \cdot w_i + b\right) \]
+
+    <p>wobei \( f \) die Sigmoid-Funktion ist:</p>
+
+    \[ f(z) = \frac{1}{1 + e^{-z}} \]
+
+    <table>
+      <thead>
+        <tr><th>Symbol</th><th>Bedeutung</th><th>Beschreibung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>\( x_i \)</td><td>Eingangsvariablen</td><td>Klinische Patientendaten</td></tr>
+        <tr><td>\( w_i \)</td><td>Gewichte</td><td>Lernbare Parameter</td></tr>
+        <tr><td>\( b \)</td><td>Bias</td><td>Verschiebt die Entscheidungsgrenze</td></tr>
+        <tr><td>\( f \)</td><td>Aktivierungsfunktion</td><td>Sigmoid → Ausgabe zwischen 0 und 1</td></tr>
+        <tr><td>\( y \)</td><td>Ausgabe</td><td>Wahrscheinlichkeit für Diabetes</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:18px;">Netzwerkarchitektur</h3>
+    <ul>
+      <li>Typ : <strong>patternnet</strong> (MATLAB Neural Network für Klassifikation)</li>
+      <li>Hidden Layer : 1 Schicht mit 10 Neuronen</li>
+      <li>Aktivierungsfunktion : Sigmoid</li>
+      <li>Normalisierung : Range [0, 1]</li>
+    </ul>
+  </section>
+
+  <!-- ===== 3. TRAINING ===== -->
+  <section class="hcard">
+    <h2>3 - Training, Validierung &amp; Test</h2>
+    <p>
+      Der Datensatz wurde in drei Teile aufgeteilt, um Overfitting zu erkennen
+      und die Generalisierungsfähigkeit des Modells zu bewerten.
+    </p>
+
+    <img src="images/traintest2.png" alt="Train / Validation / Test Split" />
+    <img src="images/ml1.png" alt="Training in MATLAB" />
+
+    <table>
+      <thead>
+        <tr><th>Split</th><th>Anteil</th><th>Zweck</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Training</td><td>70 %</td><td>Modell lernt Gewichte und Bias</td></tr>
+        <tr><td>Validation</td><td>15 %</td><td>Overfitting-Kontrolle während Training</td></tr>
+        <tr><td>Test</td><td>15 %</td><td>Finale Evaluierung auf ungesehenen Daten</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== 4. ERGEBNISSE ===== -->
+  <section class="hcard">
+    <h2>4 - Ergebnisse &amp; Evaluierung</h2>
+
+    <h3>Accuracy pro Dataset</h3>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="value">78.1 %</span>
+        <div class="label">Training Accuracy</div>
+      </div>
+      <div class="metric-card">
+        <span class="value">78.3 %</span>
+        <div class="label">Validation Accuracy</div>
+      </div>
+      <div class="metric-card">
+        <span class="value">82.6 %</span>
+        <div class="label">Test Accuracy</div>
+      </div>
+      <div class="metric-card">
+        <span class="value">78.8 %</span>
+        <div class="label">Overall Accuracy</div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:22px;">Confusion Matrix</h3>
+    <img src="images/kps.png" alt="Confusion Matrix" />
+
+    <table style="margin-top:14px;">
+      <thead>
+        <tr><th>Dataset</th><th>Accuracy</th><th>Klasse 0 (gesund)</th><th>Klasse 1 (diabetisch)</th><th>Bewertung</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Training</td><td>78.1 %</td><td>57.1 %</td><td>21.0 %</td><td>Gutes Lernen, Klasse 1 schwach</td></tr>
+        <tr><td>Validation</td><td>78.3 %</td><td>59.1 %</td><td>19.1 %</td><td>Kein Overfitting</td></tr>
+        <tr><td>Test</td><td>82.6 %</td><td>55.7 %</td><td>27.0 %</td><td>Gute Generalisierung</td></tr>
+        <tr><td><strong>Overall</strong></td><td><strong>78.8 %</strong></td><td>57.2 %</td><td>21.6 %</td><td>Robustes Modell</td></tr>
+      </tbody>
+    </table>
+
+    <h3 style="margin-top:22px;">ROC-Kurve</h3>
+    <img src="images/rocal.png" alt="ROC All" />
+    <img src="images/roc3.png" alt="ROC Details" />
+
+    <div class="limit-note">
+      Das Modell zeigt kein Overfitting — Training, Validation und Test Accuracy sind ähnlich.
+      Klasse 1 (diabetisch) wird schlechter erkannt als Klasse 0, was auf ein Klassenungleichgewicht
+      im Datensatz hinweist. Dies ist ein bekanntes Problem beim Pima-Dataset.
+    </div>
+  </section>
+
+  <!-- ===== 5. ZUSAMMENFASSUNG ===== -->
+  <section class="hcard">
+    <h2>5 - Zusammenfassung</h2>
+
+    <h3>Grenzen des Modells</h3>
+    <ul>
+      <li>Klassenungleichgewicht — Klasse 1 (diabetisch) ist unterrepräsentiert</li>
+      <li>Kein Hyperparameter-Tuning durchgeführt</li>
+      <li>Kein Vergleich mit anderen Algorithmen (Random Forest, SVM)</li>
+      <li>Kleine Datensatzgröße (768 Patienten)</li>
+    </ul>
+
+    <h3 style="margin-top:22px;">Techs</h3>
+    <div class="skills-row">
+      <span class="skill-tag">MATLAB</span>
+      <span class="skill-tag">Machine Learning</span>
+      <span class="skill-tag">Neural Network</span>
+      <span class="skill-tag">Klassifikation</span>
+      <span class="skill-tag">Confusion Matrix</span>
+      <span class="skill-tag">ROC-Kurve</span>
+      <span class="skill-tag">Train/Val/Test Split</span>
+      <span class="skill-tag">Datennormalisierung</span>
+      <span class="skill-tag">Medizinische Daten</span>
+      <span class="skill-tag">Technische Dokumentation</span>
+    </div>
+  </section>
+
+  <!-- ===== 6. AUSBLICK ===== -->
+ 
+
+</main>
+
+<footer>
+  © <span id="year"></span> – Diabetes Prediction · Machine Learning · MATLAB | Steve Meka
+</footer>
+
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>
