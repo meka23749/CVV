@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kamera-Radar-Fusion · SiL-Validierung · nuScenes</title>
+  <style>
+    :root {
+      --bg: #0f1420;
+      --card: #171e2e;
+      --text: #e6e9ef;
+      --muted: #9aa4b8;
+      --accent: #4da3ff;
+      --border: #263049;
+      --ok: #3ecf8e;
+      --warn: #ffb84d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    nav a { color: var(--accent); text-decoration: none; margin-right: 1.2rem; }
+    nav a:hover { text-decoration: underline; }
+    main { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    h1 { font-size: 1.9rem; line-height: 1.25; margin-bottom: 0.3rem; }
+    .subtitle { color: var(--muted); font-size: 1.05rem; margin-bottom: 1.2rem; }
+    h2 { font-size: 1.35rem; margin-top: 2.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; }
+    h3 { font-size: 1.05rem; margin-top: 1.5rem; color: var(--accent); }
+    a.btn {
+      display: inline-block;
+      background: var(--accent);
+      color: #06101f;
+      padding: 0.55rem 1.1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      margin: 0.5rem 0 1rem;
+    }
+    .status {
+      display: inline-block;
+      background: rgba(62,207,142,0.12);
+      color: var(--ok);
+      border: 1px solid var(--ok);
+      border-radius: 6px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.2rem 0;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+    .card h4 { margin: 0 0 0.4rem; font-size: 0.95rem; color: var(--accent); }
+    .card p { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 0.55rem 0.7rem; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; }
+    code, pre { font-family: "SF Mono", Consolas, "Courier New", monospace; }
+    pre {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      color: #cdd6e4;
+    }
+    code { background: #0b1120; padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.88rem; }
+    pre code { background: none; padding: 0; }
+    img { max-width: 100%; border: 1px solid var(--border); border-radius: 8px; margin: 1rem 0; }
+    footer { color: var(--muted); font-size: 0.85rem; text-align: center; padding: 2rem 1rem; border-top: 1px solid var(--border); }
+    .ok { color: var(--ok); }
+
+        .motivation {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .motivation-text {
+            flex: 1;
+        }
+
+        .motivation-image {
+            flex: 1;
+        }
+
+        .motivation-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+  </style>
+</head>
+<body>
+  <nav style="position:sticky;top:0;z-index:1000;background:rgba(11,15,25,.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);">
+  <ul style="list-style:none;margin:0;padding:10px 0;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+    <li><a href="embedded.html" style="color:rgba(232,238,247,.88);font-weight:800;letter-spacing:.3px;padding:6px 14px;border-radius:999px;text-decoration:none;font-size:14px;display:inline-block;background:linear-gradient(135deg,rgba(122,162,255,.25),rgba(99,211,255,.18));border:1px solid rgba(122,162,255,.22);">Portfolio</a></li>
+  </ul>
+</nav>
+
+  <main>
+    <h1>Kamera-Radar-Fusion · Anforderungsbasierte SiL-Validierung</h1>
+    <p class="subtitle">
+      Wahrnehmungssystem zur Hinderniserkennung (Kamera + Radar), validiert als
+Software-in-the-Loop: auf reproduzierbaren synthetischen Szenarien und auf realen
+nuScenes-Daten (reales Radar, reale Ground Truth).
+    </p>
+
+    <p>
+      <a class="btn" href="https://github.com/meka23749/camera-radar-fusion-validation">GitHub Repository</a>
+    </p>
+
+    
+
+    <div class="motivation">
+
+    <div class="motivation-text">
+        <h2>Motivation</h2>
+
+        <p>
+            In der realen ADAS-Entwicklung entfällt der größte Teil des Aufwands auf das
+            <strong>Testen und Validieren</strong> von Wahrnehmungssoftware, nicht allein auf deren
+            Entwicklung. Dieses Projekt bildet genau diesen Workflow vollständig ab: von den
+            Anforderungen über die Systemarchitektur bis zu einer automatisierten,
+            anforderungsbasierten Validierungs-Pipeline mit CI/CD.
+        </p>
+
+        <p>
+            Der Fokus liegt bewusst auf der <strong>Validierung</strong>: der Wahrnehmungsalgorithmus
+            (Kamera-Detektion, Radarverarbeitung, Fusion) ist das <em>System under Test</em>;
+            das eigentliche Ergebnis ist eine reproduzierbare Validierungsumgebung mit
+            rückverfolgbaren Anforderungen, automatisierten Metriken und CI/CD.
+        </p>
+    </div>
+
+
+</div>
+
+
+    
+
+    <h2>1 - Systemgrenze &amp; Ansatz</h2>
+    <p>
+      Die Architektur trennt zwei klar abgegrenzte Teile: das <strong>System under Test</strong>
+      (das Wahrnehmungssystem) und das <strong>Test Harness</strong> (die Validierungsumgebung).
+      Diese Trennung spiegelt die reale ADAS-Entwicklung wider - die Wahrnehmungssoftware läuft
+      im Fahrzeug, die Validierung läuft offline gegen annotierte Daten.
+    </p>
+        <p>Die Validierung läuft in zwei Stufen:</p>
+    <ol>
+      <li>
+        <strong>Synthetische SiL (umgesetzt):</strong> Ein Szenariogenerator mit festem Seed
+        erzeugt bewegte Verkehrsteilnehmer mit exakt bekannter Ground Truth. Objektbasierte
+        Kamera- und Radarmodelle bilden typische Sensorschwächen nach (Tiefenfehler,
+        begrenzte Reichweite, mehrere Radarechos pro Fahrzeug, Clutter). Damit wird die
+        Fusionslogik validiert, nicht die Sensoren selbst.
+      </li>
+            <li>
+        <strong>Realdaten-SiL (teilweise umgesetzt):</strong> Radarpunkte und Annotationen
+        werden aus nuScenes v1.0-mini abgespielt; die Radardaten werden auf den
+        Kamerazeitstempel bewegungskompensiert. Die Kamera ist noch modelliert, da der
+        Detektor noch fehlt. Parameter werden auf 5 Szenen eingestellt und auf 5 anderen
+        einmalig geprüft.
+      </li>
+    </ol>
+    <p>
+      In beiden Stufen wird die Ausgabe gegen die Ground Truth verglichen; Recall,
+      Precision und Latenz werden automatisch berechnet und je Anforderung mit
+      PASS/FAIL bewertet.
+    </p>
+    <!--<p class="subtitle" style="font-size:0.9rem">
+      Hinweis: Die Pipeline ist vollständig implementiert und getestet. Aktuell laufen die Blöcke
+      mit synthetischen Platzhalterdaten; die Anbindung der realen nuScenes-Daten erfolgt, ohne die
+      Architektur zu verändern (Kapselung : nur die Blockinternas werden ersetzt).
+    </p> -->
+
+    <h2>2 - Architektur (Capella / MBSE)</h2>
+    <p>
+      Die logische Architektur wurde in Capella (Arcadia / MBSE) modelliert. Sie zeigt die beiden
+      getrennten Bereiche und die Component Exchanges zwischen den Blöcken.
+    </p>
+    <img src="images/architecture.png" alt="Logische Architektur: Perception System und Test Harness">
+    <p>Der Data Loader liest wahlweise synthetische Szenarien oder nuScenes-Daten; Architektur und Validierung bleiben gleich.</p>
+    <table>
+      <tr><th>Block</th><th>Aufgabe</th></tr>
+      <tr><td>Data Loader</td><td>Sensordaten einlesen, Kamera &amp; Radar zeitlich synchronisieren</td></tr>
+      <tr><td>Camera Perception</td><td>Objekte im Bild erkennen und klassifizieren (aktuell Platzhalter, Detektor geplant)</td></tr>
+      <tr><td>Radar Processing</td><td>Radarechos zu Objekten clustern (Position, Geschwindigkeit, Konfidenz)</td></tr>
+      <tr><td>Fusion</td><td>Kamera- und Radardetektionen per optimaler Datenassoziation zusammenführen</td></tr>
+      <tr><td>Output</td><td>Hindernisliste filtern und strukturiert ausgeben</td></tr>
+      <tr><td>Ground Truth</td><td>Referenzobjekte bereitstellen (synthetische Szenarien oder nuScenes-Annotationen, mit dokumentierten Bewertungsregeln)</td></tr>      <tr><td>Szenario &amp; Sensormodelle</td><td>Synthetische Szenarien mit Ground Truth, objektbasierte Kamera- und Radarmodelle</td></tr>      <tr><td>Validation</td><td>Recall / Precision gegen Ground Truth (klassenbewusst, nach Konfidenz sortiert)</td></tr>
+      <tr><td>SiL-Runner</td><td>Szenario → System → Metriken → Urteil je Anforderung</td></tr>
+      <tr><td>Metrics Report</td><td>Bericht (JSON / Markdown) bei jedem CI-Lauf veröffentlicht</td></tr>
+    </table>
+
+    <h2>3 - Datenmodell (Design → Code)</h2>
+    <p>
+      Die zwischen den Blöcken ausgetauschten Datenstrukturen wurden zuerst im Design
+      festgelegt und als Python-<code>dataclasses</code> implementiert und  mit Unit-Tests abgesichert.
+    </p>
+    <figure>
+      <img src="images/class-diagram.png" alt="Klassendiagramm der Datenstrukturen">
+    </figure>
+    <pre><code>@dataclass
+class DetectedObject:
+    object_class: str      # "car", "pedestrian", ...
+    x: float               # longitudinale Position
+    y: float               # laterale Position
+    velocity: float        # Relativgeschwindigkeit
+    confidence: float      # Detektionskonfidenz 0..1
+    timestamp: float       # zugehöriger Frame</code></pre>
+
+    <h2>4 - Fusion: Datenassoziation</h2>
+    <p>
+      Kamera und Radar können dasselbe reale Objekt erfassen. Die Fusion ordnet
+        Detektionen desselben Frames einander zu und übernimmt die Klasse von der Kamera
+        sowie Position und Geschwindigkeit vom Radar.
+    </p>
+        <p>Version 2, abgeleitet aus den Validierungsergebnissen:</p>
+    <ul>
+      <li><strong>Optimale Zuordnung</strong> (ungarischer Algorithmus) statt Greedy-Zuordnung:
+        das Ergebnis hängt nicht mehr von der Reihenfolge der Listen ab.</li>
+      <li><strong>Entfernungsabhängige Assoziationsschwelle</strong> (3 m + 0,08 × Entfernung):
+        der Tiefenfehler der Kamera wächst mit der Entfernung. Mit fester 3-m-Schwelle wurde
+        ein Fahrzeug bei 75 m in 46 % der Frames doppelt ausgegeben, danach in 4 %.</li>
+      <li><strong>Synchronisationsprüfung</strong> (REQ-12): Detektionen aus einem anderen Frame
+        (Abweichung &gt; 50 ms) werden abgelehnt.</li>
+    </ul>
+
+        <p>Version 3, abgestimmt auf realen nuScenes-Daten (auf 5 Szenen eingestellt, auf 5 anderen einmalig geprüft):</p>
+    <ul>
+      <li><strong>Elliptisches Assoziationsgate</strong> (0,75 m quer, 3 m längs zur Sichtlinie):
+        die Kamera schätzt die Entfernung ungenau, die Richtung aber genau. Clutter neben einem
+        Fahrzeug (z. B. eine Leitplanke) übernimmt so nicht mehr dessen Kameradetektion:
+        +7,5 Punkte Recall im Nahbereich.</li>
+      <li><strong>Unbestätigte Radarobjekte müssen sich bewegen</strong> (≥ 5 m/s): 84 % der
+        realen Radarpunkte sind statisch. Fehlalarme sinken von rund 57 auf rund 5 pro Frame.</li>
+      <li><strong>Kein mit der Entfernung wachsendes Gate mehr:</strong> die in Version 2 auf
+        synthetischen Daten eingestellte Erweiterung verschlechtert das System auf realen Daten.</li>
+    </ul>
+    <figure>
+      <img src="images/04_Fusion_Design.png" alt="Ablaufdiagramm der Fusionslogik">
+      <p>Ablauf der Version 1</p>
+    </figure>
+
+
+        <h2>5 - Anforderungen &amp; Traceability</h2>
+    <p>
+      Jeder Test ist im Code mit seiner Anforderung markiert
+      (<code>@pytest.mark.requirement("REQ-XX")</code>). Ein automatischer Test prüft bei jedem
+      Lauf, dass die Traceability-Matrix exakt mit diesen Markierungen übereinstimmt.
+    </p>
+        <p>
+      Verifikationsstufen: L1 = Logik (Unit-Test), L2 = synthetische SiL, L3 = reale Daten.
+      Nachweisregel: Ein Zielwert gilt nur als erfüllt, wenn das gesamte
+      95-%-Konfidenzintervall über dem Zielwert liegt.
+    </p>
+    <p>
+      Ergebnisse auf realen Daten: nuScenes v1.0-mini, nur Validierungsszenen (nie zum
+      Einstellen verwendet), reales Radar, reale Ground Truth, <strong>modellierte Kamera</strong>.
+    </p>
+    <table>
+      <tr><th>ID</th><th>Anforderung</th><th>Zielwert</th><th>Gemessen [95-%-KI]</th><th>Stufe</th><th>Status</th></tr>
+      <tr><td>REQ-04</td><td>Reichweite Radar</td><td>Recall &gt; 0,5 (120–180 m)</td><td>0,67 [0,21–0,94], n = 3</td><td>L3</td><td>⚠️ nicht schlüssig</td></tr>
+      <tr><td>REQ-05</td><td>Reichweite Gesamtsystem</td><td>Recall &gt; 0,5 (80–180 m)</td><td>0,21 [0,13–0,31], n = 82</td><td>L3</td><td>❌</td></tr>
+      <tr><td>REQ-08</td><td>Recall Fahrzeuge &lt; 30 m</td><td>≥ 0,90</td><td>0,78 [0,73–0,82], n = 318</td><td>L3</td><td>❌</td></tr>
+      <tr><td>REQ-09</td><td>Precision</td><td>≥ 0,80</td><td>0,47 [0,44–0,49]</td><td>L3</td><td>❌</td></tr>
+      <tr><td>REQ-10</td><td>Latenz pro Frame</td><td>≤ 100 ms</td><td>2,1 ms (nur Fusionsstufe)</td><td>L3</td><td>⚠️ ohne Detektor</td></tr>
+      <tr><td>REQ-11</td><td>nuScenes-Daten einlesen</td><td>–</td><td>alle 404 Samples</td><td>L3</td><td class="ok">✅</td></tr>
+      <tr><td>REQ-12</td><td>Synchronisation Kamera / Radar</td><td>≤ 100 ms, bewegungskompensiert</td><td>max. 72 ms gemessen</td><td>L1</td><td class="ok">✅</td></tr>
+      <tr><td>REQ-03</td><td>Reichweite Kamera</td><td>≥ 80 m</td><td>–</td><td>–</td><td>❌ benötigt echten Kameradetektor</td></tr>
+    </table>
+    <p>
+      <strong>Das System erfüllt seine Anforderungen auf realen Daten nicht.</strong>
+      Auf dem synthetischen Prüfstand erfüllte es sie (Precision 0,81, Recall 0,92), doch das
+      synthetische Radarmodell hatte rund 40-mal weniger Clutter als das reale Radar.
+      Die verbleibende Lücke ist eine Grenze der Architektur (keine zeitliche Verfolgung über
+      mehrere Frames), keine Frage der Parametrierung.
+    </p>
+    <p>
+      REQ-04, REQ-05 und REQ-12 wurden auf Basis der Messungen präzisiert; die Änderungen sind
+      im Repository mit Begründung versioniert.
+    </p>
+
+        <h2>6 - Was die Validierung gefunden hat</h2>
+    <p>
+      Jeder der folgenden Fehler wurde von der Validierungsumgebung selbst gefunden,
+      mit einem Test reproduziert und in einem eigenen Commit behoben.
+    </p>
+    <table>
+      <tr><th>Befund</th><th>Wie gefunden</th><th>Behebung</th></tr>
+      <tr><td>Matrix meldete Anforderungen als verifiziert durch Tests, die nicht fehlschlagen konnten</td><td>Frage an jeden Test: „Schlägt er fehl, wenn die Anforderung verletzt ist?"</td><td>Ehrliche Verifikationsstufen (L1 / L2 / L3)</td></tr>
+      <tr><td>Metriken ignorierten Klassen und hingen von der Listenreihenfolge ab</td><td>Gezielte Gegenbeispiele</td><td>Klassenbewusste, nach Konfidenz sortierte Zuordnung</td></tr>
+      <tr><td>Precision 0,50: jedes Radarecho wurde ein eigenes Objekt</td><td>Erster SiL-Lauf, dann Ein-Fahrzeug-Experiment</td><td>Clustering der Radarechos</td></tr>
+      <tr><td>Feste 3-m-Schwelle trennte ferne Objekte (46 % bei 75 m)</td><td>Experiment über die Entfernung</td><td>Ungarischer Algorithmus, entfernungsabhängige Schwelle</td></tr>
+      <tr><td>Zeitstempel dokumentiert geprüft, aber nie geprüft</td><td>Detektion aus fremdem Frame fusioniert</td><td><code>SynchronizationError</code> (REQ-12)</td></tr>
+      <tr><td>Ergebnisse schwankten leicht zwischen Läufen und Rechnern</td><td>Gleicher Seed, anderer <code>PYTHONHASHSEED</code></td><td>Deterministische Reihenfolge, prozessübergreifender Test</td></tr>
+      <tr><td>Handgepflegte Matrix wich vom Code ab</td><td>Automatischer Abgleich mit den Test-Markierungen</td><td>Matrix wird bei jedem Testlauf geprüft</td></tr>
+            <tr><td>Synthetische Ergebnisse waren nicht übertragbar: Precision 0,81 synthetisch, 0,08 mit realem Radar</td><td>Erster Lauf mit realen nuScenes-Radardaten</td><td>Anforderungsnachweis auf reale Daten (L3) verlagert; synthetischer Prüfstand nur noch als Logik-Regressionstest</td></tr>
+      <tr><td>Ein Zuordnungsschwellwert von 5 m ließ unabhängige Detektionen Fahrzeuge „finden" (Zufallsniveau 60–68 %)</td><td>Gleiche Detektionen gegen die Ground Truth eines fremden Frames</td><td>Einheitlich 2 m, Zufallsniveau wird mit ausgewiesen</td></tr>
+      <tr><td>Mit realem Radar war die Fusion schlechter als die Kamera allein</td><td>Kontrollierte Experimente (Radar aus, Gate-Form)</td><td>Elliptisches Gate, unbestätigte Radarobjekte müssen sich bewegen</td></tr>
+      <tr><td>REQ-04, REQ-05 und REQ-12 waren in ihrer Formulierung nicht prüfbar</td><td>Reale Sensordaten</td><td>Anforderungen präzisiert, mit Änderungshistorie</td></tr>
+    </table>
+        <p><strong>Auf dem synthetischen Prüfstand:</strong></p>
+    <table>
+      <tr><th>Version</th><th>Precision (REQ-09)</th><th>Recall &lt; 30 m (REQ-08)</th></tr>
+      <tr><td>Ausgangsstand</td><td>0,50 ❌</td><td>0,97</td></tr>
+      <tr><td>+ Clustering der Radarechos</td><td>0,76 ❌</td><td>0,93</td></tr>
+      <tr><td>+ optimale Zuordnung, entfernungsabhängige Schwelle</td><td class="ok">0,81 ✅</td><td>0,92</td></tr>
+    </table>
+        <p><strong>Auf realen Daten (Validierungsszenen):</strong></p>
+    <table>
+      <tr><th>Konfiguration</th><th>Precision (REQ-09)</th><th>Recall &lt; 30 m (REQ-08)</th><th>Recall 80–180 m (REQ-05)</th></tr>
+      <tr><td>Vorher (auf synthetischen Daten eingestellt)</td><td>0,07 ❌</td><td>0,68 ❌</td><td>0,62</td></tr>
+      <tr><td>Jetzt (auf realen Daten eingestellt)</td><td>0,47 ❌</td><td>0,78 ❌</td><td>0,21 ❌</td></tr>
+      <tr><td>Kamera allein (modelliert, Referenz)</td><td>0,70</td><td>0,81</td><td>0,00</td></tr>
+    </table>
+
+    <h2>7 - Projektmanagement </h2>
+    <p>
+      Das Projekt wird mit GitHub Issues und einem Kanban-Board organisiert (Todo / In Progress /
+      Done), der frei verfügbaren Entsprechung eines Jira-Boards. Entwickelt wird über
+      Feature-Branches und Pull Requests; <code>main</code> bleibt jederzeit stabil.
+    </p>
+    <figure>
+      <img src="images/projectboard.png" alt="GitHub Project Board (Kanban)">
+    </figure>
+
+    <figure>
+      <img src="images/workflow.png" alt="Git-Workflow mit Feature-Branches und Pull Requests">
+    </figure>
+
+            <h2>8 - Aktueller Stand</h2>
+    <table>
+      <tr><th>Komponente</th><th>Technologie</th><th>Status</th></tr>
+      <tr><td>Requirements-Spezifikation</td><td>ID-basiert, rückverfolgbar, mit Änderungshistorie</td><td class="ok">✅</td></tr>
+      <tr><td>Systemarchitektur</td><td>Capella / MBSE</td><td class="ok">✅</td></tr>
+      <tr><td>Detailed Design</td><td>Datenstrukturen, Klassendiagramm</td><td class="ok">✅</td></tr>
+      <tr><td>Blöcke (Loader, Radar, Fusion, Output)</td><td>Python</td><td class="ok">✅</td></tr>
+      <tr><td>nuScenes-Anbindung</td><td>Eigener Loader (JSON, PCD), Koordinatentransformationen, Bewegungskompensation</td><td class="ok">✅</td></tr>
+      <tr><td>Realdaten-SiL</td><td>Reales Radar + reale Ground Truth, Konfidenzintervalle, Zufallsniveau, Tune/Validate-Aufteilung</td><td class="ok">✅</td></tr>
+      <tr><td>Synthetische SiL</td><td>Logik-Regressionstest (Sensormodelle nicht kalibriert)</td><td class="ok">✅</td></tr>
+      <tr><td>Validation &amp; Metriken</td><td>Recall / Precision, TP/FP/FN, Urteil je Anforderung</td><td class="ok">✅</td></tr>
+      <tr><td>Tests</td><td>135 Tests: 127 in der CI, 8 benötigen nuScenes-Daten (lokal)</td><td class="ok">✅</td></tr>
+      <tr><td>Traceability</td><td>pytest-Marker + automatisch geprüfte Matrix</td><td class="ok">✅</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions, Validierungsbericht je Lauf</td><td class="ok">✅</td></tr>
+      <tr><td>Reproduzierbarkeit</td><td>Prozess- und plattformübergreifend geprüft</td><td class="ok">✅</td></tr>
+      <tr><td>Git Workflow</td><td>Feature-Branches, Pull Requests</td><td class="ok">✅</td></tr>
+      <tr><td>Zeitliche Verfolgung (Tracking)</td><td>Bestätigung statischer Objekte über mehrere Frames</td><td>🚧 nächster Schritt</td></tr>
+      <tr><td>Kamera-Detektor</td><td>Ersetzt das Kameramodell</td><td>🚧 geplant</td></tr>
+      <tr><td>Docker</td><td>Containerisierte Läufe</td><td>🚧 geplant</td></tr>
+    </table>
+
+        <p class="subtitle" style="font-size:0.9rem">
+      Hinweis: Die Ergebnisse auf realen Daten nutzen noch eine modellierte Kamera und
+      nuScenes v1.0-mini (10 Szenen, urban, ≤ 55 km/h). Sie zeigen, dass die aktuelle
+      Architektur ohne zeitliche Verfolgung die Anforderungen nicht erfüllt; die Ursachen
+      sind gemessen und dokumentiert.
+    </p>
+
+    
+  </main>
+
+  <footer>
+    © Steve Meka · Kamera-Radar-Fusion · SiL-Validierung auf nuScenes
+  </footer>
+</body>
+</html>
