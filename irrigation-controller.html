@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Irrigation Controller · ARM · CI/CD</title>
+  <style>
+    :root{--bg:#0b0f19;--muted:#9fb0c7;--text:#e8eef7;--accent:#7aa2ff;--accent2:#63d3ff;--border:rgba(255,255,255,.08);--radius:16px;--shadow:0 10px 30px rgba(0,0,0,.35);--max:1050px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% 0%,rgba(122,162,255,.20),transparent 60%),radial-gradient(900px 500px at 90% 10%,rgba(99,211,255,.16),transparent 55%),var(--bg);color:var(--text);line-height:1.6;}
+    a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
+    header,main,footer{max-width:var(--max);margin:auto;padding:32px 20px}
+    .hcard{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin-bottom:18px;}
+    h1,h2,h3{margin:0 0 10px;color:var(--accent);letter-spacing:.2px}
+    h1{font-size:clamp(24px,3vw,36px)}h2{font-size:18px}h3{font-size:16px;color:var(--accent2)}
+    p{margin:0 0 10px}.muted{color:var(--muted)}
+    ul{margin:8px 0 12px 18px}li{margin:6px 0}
+    table{width:100%;border-collapse:collapse;margin-top:10px;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,.10);}
+    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:10px 12px;text-align:left;vertical-align:top;}
+    th{color:var(--muted);font-weight:600;background:rgba(255,255,255,.03)}
+    code{background:rgba(255,255,255,.06);padding:3px 6px;border-radius:6px;font-size:.95em;}
+    .skills-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+    .skill-tag{background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.25);color:var(--accent);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;}
+    .context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px;}
+    .context-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;}
+    .context-item .icon{font-size:22px;margin-bottom:8px;}.context-item h3{font-size:14px;margin:0 0 4px;color:var(--accent2);}.context-item p{font-size:13px;color:var(--muted);margin:0;}
+    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px;}
+    .metric-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;text-align:center;}
+    .metric-card .value{font-size:26px;font-weight:700;color:var(--accent);display:block;}.metric-card .label{font-size:12px;color:var(--muted);margin-top:4px;}
+    pre{margin:10px 0;overflow:auto;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.28);color:var(--text);font-size:13px;line-height:1.6;}
+    .callout{background:rgba(99,211,255,.07);border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:var(--muted);margin-top:14px;}
+    .warn-note{background:rgba(255,107,107,.07);border-left:3px solid #ff6b6b;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#ffb3b3;margin-top:14px;}
+    .success{background:rgba(99,255,162,.07);border-left:3px solid #63ffa2;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#a3ffcc;margin-top:14px;}
+    .ausblick-list{list-style:none;margin:12px 0 0;padding:0;}
+    .ausblick-list li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14.5px;}
+    .ausblick-list li:last-child{border-bottom:none;}
+    .ausblick-list .step{min-width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.15);border:1px solid rgba(122,162,255,.3);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+    .gitlog{font-family:monospace;font-size:12.5px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:14px;margin:10px 0;}
+    .gitlog .commit{padding:4px 0;display:flex;gap:10px;}
+    .gitlog .hash{color:#888780;}
+    .gitlog .tag-feat{color:#97C459;}
+    .gitlog .tag-fix{color:#F09595;}
+    .gitlog .tag-test{color:#FAC775;}
+    .gitlog .tag-docs{color:#85B7EB;}
+    footer{text-align:center;color:var(--muted);font-size:12.5px;padding-bottom:30px;}
+  </style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:1000;background:rgba(11,15,25,.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);">
+  <ul style="list-style:none;margin:0;padding:10px 0;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+    <li><a href="embedded.html" style="color:rgba(232,238,247,.88);font-weight:800;letter-spacing:.3px;padding:6px 14px;border-radius:999px;text-decoration:none;font-size:14px;display:inline-block;background:linear-gradient(135deg,rgba(122,162,255,.25),rgba(99,211,255,.18));border:1px solid rgba(122,162,255,.22);">Portfolio</a></li>
+
+  </ul>
+</nav>
+
+<header>
+  <h1>Irrigation Controller · ARM Bare-Metal · CI/CD</h1>
+  <p class="muted" style="font-size:15px;margin-top:6px;">
+    C-Firmware für eine automatisierte Bewässerungssteuerung. Cross-Compilation für ARM Cortex-M,
+    Unit-Tests mit Unity, Simulation in QEMU und vollständige CI/CD-Pipeline.
+  </p>
+    <a href="https://github.com/meka23749/irrigation-controller-embedded" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 18px;border-radius:999px;background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.28);color:#7aa2ff;font-size:14px;font-weight:700;text-decoration:none;">
+    <svg height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    GitHub Repository
+  </a>
+</header>
+
+<main>
+
+
+<section class="hcard">
+    <h2>1 - Logische Systemarchitektur (Capella / MBSE)</h2>
+    <p>
+      Die <strong>logische Architektur</strong>  des Controllers wurde
+      in Capella (Arcadia / MBSE) modelliert. Sie zeigt die funktionalen Blöcke und ihre
+      Datenflüsse, mit einem bewusst <strong>separaten Safety Monitor</strong>, getrennt von
+      der normalen Steuerlogik.
+    </p>
+
+    <img src="images/irrigation-architecture.png"
+         alt="Logische Architektur: Sensor Input, Control Logic, Safety Monitor, Pump Output"
+         style="max-width:100%;border-radius:12px;margin:16px 0;background:#fff;">
+
+    <p>
+      Die Steuerlogik (<code>Control Logic</code>) und die Sicherheitsüberwachung
+      (<code>Safety Monitor</code>) sind getrennt: der Safety Monitor erzwingt Fail-Safe bei
+      Sensorfehler und stoppt die Pumpe bei Überschreitung der maximalen Laufzeit (als Überflutungsschutz gedacht, siehe Bekannte Grenzen) 
+    </p>
+  </section>
+
+  <section class="hcard">
+    <h2>2 - Anforderungen &amp; Traceability</h2>
+    <p>
+      Jedes Verhalten ist als nummerierte Anforderung spezifiziert, und jede Anforderung wird
+      durch mindestens einen automatisierten Test verifiziert — dasselbe Prinzip wie
+      <strong>DOORS</strong> (Anforderungen) und <strong>XRAY</strong> (Testmanagement) in
+      regulierten Branchen (ISO 26262, EN 50128, DO-178C).
+    </p>
+
+    <table>
+      <tr><th>ID</th><th>Anforderung</th><th>Test</th></tr>
+      <tr><td>REQ-01</td><td>Pumpe bei Initialisierung aus (sicherer Startzustand)</td><td>✅</td></tr>
+      <tr><td>REQ-02</td><td>Niedrige Feuchte → Pumpe an (&lt; 30 %)</td><td>✅</td></tr>
+      <tr><td>REQ-03</td><td>Hohe Feuchte → Pumpe aus (&gt; 70 %)</td><td>✅</td></tr>
+      <tr><td>REQ-04</td><td>Hysterese (Pumpe hält Zustand zwischen den Schwellen)</td><td>⚠️ nur teilweise</td></tr>
+      <tr><td>REQ-05</td><td>Sensorfehler → Pumpe zwangsweise aus (Fail-Safe)</td><td>✅</td></tr>
+      <tr><td>REQ-06</td><td>Max. Laufzeit → Pumpe stoppt (Überflutungsschutz)</td><td>⚠️ unvollständig</td></tr>
+      <tr><td>REQ-07</td><td>Invariante: LOW &lt; HIGH Schwellenwert</td><td>✅</td></tr>
+    </table>
+
+    <p>
+      7 Anforderungen, jede mit mindestens einem Test verknüpft; 5 vollständig verifiziert, 2 mit bekannten Lücken (siehe Bekannte Grenzen). Details:
+      <a href="https://github.com/meka23749/irrigation-controller-embedded/blob/main/docs/irrigation_01_Requirements.md">Requirements</a>
+      ·
+      <a href="https://github.com/meka23749/irrigation-controller-embedded/blob/main/docs/irrigation_02_Traceability_Matrix.md">Traceability Matrix</a>
+    </p>
+  </section>
+
+<section class="hcard">
+  <h2>3 - Build- & Test-Pipeline</h2>
+  <p>Drei Ebenen, von der Logik bis zur simulierten Hardware:</p>
+
+  <svg width="100%" viewBox="0 0 680 600" role="img" style="margin:16px 0;">
+    <title>Irrigation Controller Architektur</title>
+    <desc>Drei Schichten: Geschaeftslogik in C, Cross-Compilation Toolchain, QEMU Hardware-Simulation, validiert durch CI/CD</desc>
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </marker>
+    </defs>
+
+    <rect x="40" y="20" width="600" height="100" rx="14" fill="rgba(127,119,221,.10)" stroke="rgba(127,119,221,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="14" font-weight="600" fill="#AFA9EC" x="340" y="50" text-anchor="middle" dominant-baseline="central">Logik (irrigation_controller.c)</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="340" y="72" text-anchor="middle" dominant-baseline="central">Hardware-unabhängig, reiner C-Code</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="340" y="94" text-anchor="middle" dominant-baseline="central">Schwellenwerte, Pumpensteuerung, Sicherheits-Timer</text>
+
+    <line x1="170" y1="120" x2="170" y2="148" stroke="rgba(127,119,221,.6)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="180" y="138" dominant-baseline="central">Unity Tests</text>
+
+    <line x1="510" y1="120" x2="510" y2="148" stroke="rgba(127,119,221,.6)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="430" y="138" dominant-baseline="central">main.c + startup.c</text>
+
+    <rect x="40" y="150" width="280" height="90" rx="14" fill="rgba(29,158,117,.10)" stroke="rgba(29,158,117,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="14" font-weight="600" fill="#5DCAA5" x="180" y="178" text-anchor="middle" dominant-baseline="central">Native Build (gcc/cl)</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="180" y="200" text-anchor="middle" dominant-baseline="central">Schnelle Validierung auf PC</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="180" y="220" text-anchor="middle" dominant-baseline="central">7 Tests</text>
+
+    <rect x="360" y="150" width="280" height="90" rx="14" fill="rgba(186,117,23,.10)" stroke="rgba(186,117,23,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="14" font-weight="600" fill="#FAC775" x="500" y="178" text-anchor="middle" dominant-baseline="central">ARM Cross-Compile</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="500" y="200" text-anchor="middle" dominant-baseline="central">arm-none-eabi-gcc</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="500" y="220" text-anchor="middle" dominant-baseline="central">linker.ld definiert Speicherlayout</text>
+
+    <line x1="500" y1="240" x2="500" y2="268" stroke="rgba(186,117,23,.6)" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="508" y="259" dominant-baseline="central">firmware.elf</text>
+
+    <rect x="360" y="270" width="280" height="100" rx="14" fill="rgba(186,117,23,.10)" stroke="rgba(186,117,23,.35)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="14" font-weight="600" fill="#FAC775" x="500" y="298" text-anchor="middle" dominant-baseline="central">QEMU Simulation</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="500" y="320" text-anchor="middle" dominant-baseline="central">lm3s6965evb Cortex-M Emulation</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="500" y="342" text-anchor="middle" dominant-baseline="central">Ersatz für reale Hardware</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="500" y="358" text-anchor="middle" dominant-baseline="central">Boot-Check</text>
+
+    <line x1="180" y1="240" x2="180" y2="270" stroke="rgba(255,255,255,.2)" stroke-width="1" fill="none"/>
+    <line x1="180" y1="270" x2="180" y2="270" stroke="rgba(255,255,255,.2)" stroke-width="1" fill="none"/>
+
+    <line x1="340" y1="395" x2="340" y2="395" stroke="none"/>
+    <path d="M180 240 L180 395 L340 395" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1" stroke-dasharray="3 3"/>
+    <path d="M500 372 L500 395 L340 395" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1" stroke-dasharray="3 3" marker-end="url(#arrow)"/>
+
+    <rect x="40" y="400" width="600" height="80" rx="14" fill="rgba(136,135,128,.08)" stroke="rgba(136,135,128,.25)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="14" font-weight="600" fill="#B4B2A9" x="340" y="430" text-anchor="middle" dominant-baseline="central">GitHub Actions CI</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="12" fill="#9fb0c7" x="340" y="452" text-anchor="middle" dominant-baseline="central">Native Tests → ARM Build → QEMU Boot-Check, bei jedem Push</text>
+
+    <rect x="40" y="500" width="185" height="50" rx="8" fill="rgba(99,153,34,.10)" stroke="rgba(99,153,34,.30)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#97C459" x="132" y="518" text-anchor="middle" dominant-baseline="central">7/7 Unit Tests</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="132" y="536" text-anchor="middle" dominant-baseline="central">Unity Framework</text>
+
+    <rect x="247" y="500" width="185" height="50" rx="8" fill="rgba(136,135,128,.08)" stroke="rgba(136,135,128,.25)" stroke-width="0.5"/>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="13" font-weight="600" fill="#B4B2A9" x="339" y="518" text-anchor="middle" dominant-baseline="central">2 Bugs gefunden</text>
+    <text font-family="ui-sans-serif,system-ui,sans-serif" font-size="11" fill="#9fb0c7" x="339" y="536" text-anchor="middle" dominant-baseline="central">diagnostiziert + behoben</text>
+
+    
+  </svg>
+</section>
+
+
+<section class="hcard">
+  <h2>4 - Bugs während der Entwicklung</h2>
+
+  <h3>Bug 1:  HardFault beim Boot in QEMU</h3>
+  <div class="warn-note">
+    ⚠️ <strong>Symptom:</strong> <code>qemu: fatal: Lockup: can't escalate 3 to HardFault</code>,
+    Program Counter blieb bei <code>0x00000000</code> stecken.
+  </div>
+  <p><strong>Diagnose:</strong> <code>objdump -t firmware.elf</code> zeigte korrekt platzierte Symbole,
+  aber <code>qemu -d in_asm</code> Tracing enthüllte, dass die Ausführung nie die Adresse <code>0x08000000</code> erreichte.</p>
+  <p><strong>Root Cause:</strong> Linker-Script nutzte STM32-typische FLASH-Adresse (<code>0x08000000</code>),
+  aber die QEMU-Maschine <code>lm3s6965evb</code> erwartet Code ab <code>0x00000000</code>.</p>
+  <pre>
+MEMORY
+{
+    FLASH (rx)  : ORIGIN = 0x00000000, LENGTH = 256K   /* vorher: 0x08000000 */
+    RAM   (rwx) : ORIGIN = 0x20000000, LENGTH = 64K
+}</pre>
+  <div class="success">✅ Fix: FLASH-Adresse korrigiert + Interrupt-Vektortabelle auf 16 Einträge erweitert.</div>
+
+  <h3 style="margin-top:22px;">Bug 2: Vertauschte Schwellenwerte</h3>
+  <div class="warn-note">
+    ⚠️ <strong>Symptom:</strong> Ein Commit vertauschte versehentlich <code>HUMIDITY_LOW_THRESHOLD</code>
+    und <code>HUMIDITY_HIGH_THRESHOLD</code> — die bestehenden Tests bemerkten es zunächst nicht,
+    da sie nur Extremwerte prüften.
+  </div>
+  <p><strong>Lösung:</strong> Ein neuer Sanity-Check-Test wurde hinzugefügt, der explizit die
+  korrekte Reihenfolge der Schwellenwerte validiert — dieser Test deckte den Bug zuverlässig auf.</p>
+  <pre>
+void test_thresholds_are_correctly_ordered(void) {
+    TEST_ASSERT_TRUE(HUMIDITY_LOW_THRESHOLD < HUMIDITY_HIGH_THRESHOLD);
+}</pre>
+  <div class="success">✅ Fix: Werte zurück auf LOW=30, HIGH=70 korrigiert — alle 7 Tests bestanden.</div>
+
+  
+</section>
+
+<section class="hcard">
+  <h2>5 - CI/CD Pipeline</h2>
+  <pre>
+jobs:
+  native-tests:        # Schnelle Validierung der Logik
+    - gcc compile + run Unity tests
+
+  arm-cross-compile:    # Echte Zielarchitektur
+    needs: native-tests
+    - install gcc-arm-none-eabi + qemu-system-arm
+    - arm-none-eabi-gcc cross-compile -> firmware.elf
+    - qemu-system-arm Start (ohne Auswertung, siehe Bekannte Grenzen)
+    - upload firmware.elf als Artifact</pre>
+
+  <div class="metrics-grid" style="margin-top:16px;">
+    <div class="metric-card"><span class="value">7/7</span><div class="label">Unit Tests bestanden</div></div>
+    <div class="metric-card"><span class="value">2</span><div class="label">Bugs behoben</div></div>
+    <div class="metric-card"><span class="value">2</span><div class="label">CI Jobs (native + ARM)</div></div>
+  </div>
+</section>
+
+<section class="hcard">
+  <h2>6 - Zusammenfassung</h2>
+  <table>
+    <thead><tr><th>Komponente</th><th>Technologie</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Sprache</td><td>C (Bare-Metal)</td><td>✅</td></tr>
+      <tr><td>Zielarchitektur</td><td>ARM Cortex-M</td><td>✅</td></tr>
+      <tr><td>Cross-Compiler</td><td>arm-none-eabi-gcc</td><td>✅</td></tr>
+      <tr><td>Unit Tests</td><td>Unity Framework (7/7)</td><td>✅</td></tr>
+      <tr><td>Hardware-Simulation</td><td>QEMU (lm3s6965evb), Start ohne Testauswertung</td><td>⚠️</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions</td><td>✅</td></tr>
+      <tr><td>Systems Engineering</td><td>Requirements + Traceability (DOORS/XRAY-Prinzip)</td><td>✅</td></tr>
+      <tr><td>Architektur</td><td>Capella / MBSE (logische Architektur)</td><td>✅</td></tr>
+      <tr><td>Git Workflow</td><td>Feature/Fix Branches, Pull Requests, Merges</td><td>✅</td></tr>
+      <tr><td>Debugging</td><td>objdump, QEMU Tracing</td><td>✅</td></tr>
+    </tbody>
+  </table>
+
+  
+</section>
+
+
+</main>
+
+<footer>© <span id="year"></span> – Irrigation Controller · ARM · CI/CD | Steve Meka</footer>
+<script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
