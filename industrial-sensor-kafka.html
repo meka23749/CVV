@@ -1,60 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Industrial Sensor Pipeline · Apache Kafka</title>
-  <style>
-    :root{--bg:#0b0f19;--muted:#9fb0c7;--text:#e8eef7;--accent:#7aa2ff;--accent2:#63d3ff;--border:rgba(255,255,255,.08);--radius:16px;--shadow:0 10px 30px rgba(0,0,0,.35);--max:1050px;}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% 0%,rgba(122,162,255,.20),transparent 60%),radial-gradient(900px 500px at 90% 10%,rgba(99,211,255,.16),transparent 55%),var(--bg);color:var(--text);line-height:1.6;}
-    a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
-    header,main,footer{max-width:var(--max);margin:auto;padding:32px 20px}
-    .hcard{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin-bottom:18px;}
-    h1,h2,h3{margin:0 0 10px;color:var(--accent);letter-spacing:.2px}
-    h1{font-size:clamp(24px,3vw,36px)}h2{font-size:18px}h3{font-size:16px;color:var(--accent2)}
-    p{margin:0 0 10px}.muted{color:var(--muted)}
-    table{width:100%;border-collapse:collapse;margin-top:10px;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,.10);}
-    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:10px 12px;text-align:left;vertical-align:top;}
-    th{color:var(--muted);font-weight:600;background:rgba(255,255,255,.03)}
-    code{background:rgba(255,255,255,.06);padding:3px 6px;border-radius:6px;font-size:.95em;}
-    .skills-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
-    .skill-tag{background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.25);color:var(--accent);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;}
-    .context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px;}
-    .context-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;}
-    .context-item .icon{font-size:22px;margin-bottom:8px;}.context-item h3{font-size:14px;margin:0 0 4px;color:var(--accent2);}.context-item p{font-size:13px;color:var(--muted);margin:0;}
-    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px;}
-    .metric-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;text-align:center;}
-    .metric-card .value{font-size:26px;font-weight:700;color:var(--accent);display:block;}.metric-card .label{font-size:12px;color:var(--muted);margin-top:4px;}
-    pre{margin:10px 0;overflow:auto;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.28);color:var(--text);font-size:13px;line-height:1.6;}
-    .success{background:rgba(99,255,162,.07);border-left:3px solid #63ffa2;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#a3ffcc;margin-top:14px;}
-    .warn-note{background:rgba(255,107,107,.07);border-left:3px solid #ff6b6b;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#ffb3b3;margin-top:14px;}
-    .ausblick-list{list-style:none;margin:12px 0 0;padding:0;}
-    .ausblick-list li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14.5px;}
-    .ausblick-list li:last-child{border-bottom:none;}
-    .ausblick-list .step{min-width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.15);border:1px solid rgba(122,162,255,.3);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
-    footer{text-align:center;color:var(--muted);font-size:12.5px;padding-bottom:30px;}
-  </style>
+  <meta name="description" content="Echtzeit-Datenpipeline für industrielle Sensordaten und Apache Kafka als Message Broker, PostgreSQL zur Speicherung, Grafana für Live-Dashboards und automatische Anomalieerkennung mit zwei Schweregradklassen.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/project.css">
 </head>
-<body>
 
-<nav style="position:sticky;top:0;z-index:1000;background:rgba(11,15,25,.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);">
-  <ul style="list-style:none;margin:0;padding:10px 0;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
-    <li><a href="weitere.html" style="color:rgba(232,238,247,.88);font-weight:800;letter-spacing:.3px;padding:6px 14px;border-radius:999px;text-decoration:none;font-size:14px;display:inline-block;background:linear-gradient(135deg,rgba(122,162,255,.25),rgba(99,211,255,.18));border:1px solid rgba(122,162,255,.22);">Portfolio</a></li>
+<body>
+<nav class="site-nav">
+  <ul>
+    <li><a class="active" href="weitere.html">Portfolio</a></li>
   </ul>
 </nav>
 
 <header>
   <h1>Industrial Sensor Pipeline · Apache Kafka</h1>
-  <p class="muted" style="font-size:15px;margin-top:6px;">
+  <p class="muted lead">
     Echtzeit-Datenpipeline für industrielle Sensordaten und Apache Kafka als Message Broker,
     PostgreSQL zur Speicherung, Grafana für Live-Dashboards und automatische Anomalieerkennung
     mit zwei Schweregradklassen.
   </p>
-  <a href="https://github.com/meka23749/industrial-sensor-kafka" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 18px;border-radius:999px;background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.28);color:#7aa2ff;font-size:14px;font-weight:700;text-decoration:none;">
-    <svg height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-    GitHub Repository
-  </a>
+  <a class="btn-github" href="https://github.com/meka23749/industrial-sensor-kafka" target="_blank" rel="noopener">GitHub Repository</a>
 </header>
 
 <main>
@@ -78,7 +48,7 @@
 <section>
   <h2>1 - Architektur</h2>
 
-  <svg width="100%" viewBox="0 0 680 520" role="img" style="margin:16px 0;">
+  <svg class="diagram" width="100%" viewBox="0 0 680 520" role="img">
     <title>Kafka Pipeline Architektur</title>
     <desc>Sensor Producer sendet Daten an Kafka Broker, zwei Consumer lesen parallel: Consumer DB speichert in PostgreSQL, Consumer Alerts erkennt Anomalien und publiziert in sensor-alerts Topic. Grafana visualisiert die Daten aus PostgreSQL.</desc>
     <defs>
@@ -149,16 +119,16 @@
   <table>
     <thead><tr><th>Sensor</th><th>Typ</th><th>Normbereich</th><th>Anomalie-Schwelle</th><th>Anomalierate</th></tr></thead>
     <tbody>
-      <tr><td><code>sensor-temp-01</code></td><td>Temperatur</td><td>60–90 °C</td><td>> 95 °C</td><td>5%</td></tr>
-      <tr><td><code>sensor-vibr-01</code></td><td>Vibration</td><td>0.5–5 mm/s</td><td>> 8 mm/s</td><td>5%</td></tr>
-      <tr><td><code>sensor-press-01</code></td><td>Druck</td><td>1–6 bar</td><td>> 8 bar</td><td>5%</td></tr>
+      <tr><td><code>sensor-temp-01</code></td><td>Temperatur</td><td>60–90 °C</td><td>&gt; 95 °C</td><td>5%</td></tr>
+      <tr><td><code>sensor-vibr-01</code></td><td>Vibration</td><td>0.5–5 mm/s</td><td>&gt; 8 mm/s</td><td>5%</td></tr>
+      <tr><td><code>sensor-press-01</code></td><td>Druck</td><td>1–6 bar</td><td>&gt; 8 bar</td><td>5%</td></tr>
     </tbody>
   </table>
 
-  <h3 style="margin-top:18px;">Anomalie-Schweregradklassen</h3>
+  <h3 class="mt-18">Anomalie-Schweregradklassen</h3>
   <pre>
-MEDIUM : Wert > Schwelle          (z.B. Temperatur = 102 C bei Schwelle 95 C)
-HIGH   : Wert > Schwelle * 1.2    (z.B. Vibration  = 10.11 mm/s bei Schwelle 8 mm/s)</pre>
+MEDIUM : Wert &gt; Schwelle          (z.B. Temperatur = 102 C bei Schwelle 95 C)
+HIGH   : Wert &gt; Schwelle * 1.2    (z.B. Vibration  = 10.11 mm/s bei Schwelle 8 mm/s)</pre>
 </section>
 
 <section>
@@ -196,7 +166,7 @@ jobs:
       - test_postgresql_connection()     → DB verbindung OK
       - test_postgresql_insert()         → Insert/Read OK</pre>
 
-  <div class="metrics-grid" style="margin-top:16px;">
+  <div class="metrics-grid">
     <div class="metric-card"><span class="value">3</span><div class="label">Kafka Topics</div></div>
     <div class="metric-card"><span class="value">3</span><div class="label">Integration Tests</div></div>
     <div class="metric-card"><span class="value">2</span><div class="label">CI Jobs</div></div>
@@ -230,10 +200,10 @@ jobs:
     <li><span class="step">4</span><div><strong>Cloud Deployment</strong><br><span class="muted">Migration zu Confluent Cloud (managed Kafka) oder MSK (AWS) für produktionsnahen Betrieb.</span></div></li>
   </ul>
 </section>
-
 </main>
 
 <footer>© <span id="year"></span> – Industrial Sensor Pipeline · Apache Kafka | Steve Meka</footer>
 <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+
 </body>
 </html>

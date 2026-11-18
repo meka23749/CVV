@@ -1,75 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MQTT · IIoT Sensor Simulator · Schemathesis</title>
+  <meta name="description" content="IIoT-Sensor-Simulator mit MQTT-Protokoll, FastAPI REST-Schnittstelle und automatisierten API-Tests mit Schemathesis vollständig lauffähig mit Docker und GitHub Actions CI.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/project.css">
   <style>
-    :root{--bg:#0b0f19;--muted:#9fb0c7;--text:#e8eef7;--accent:#7aa2ff;--accent2:#63d3ff;--border:rgba(255,255,255,.08);--radius:16px;--shadow:0 10px 30px rgba(0,0,0,.35);--max:1050px;}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% 0%,rgba(122,162,255,.20),transparent 60%),radial-gradient(900px 500px at 90% 10%,rgba(99,211,255,.16),transparent 55%),var(--bg);color:var(--text);line-height:1.6;}
-    a{color:var(--accent2);text-decoration:none}a:hover{text-decoration:underline}
-    header,main,footer{max-width:var(--max);margin:auto;padding:32px 20px}
-    .hcard{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:var(--radius);padding:28px;box-shadow:var(--shadow);margin-bottom:18px;}
-    h1,h2,h3{margin:0 0 10px;color:var(--accent);letter-spacing:.2px}
-    h1{font-size:clamp(24px,3vw,36px)}h2{font-size:18px}h3{font-size:16px;color:var(--accent2)}
-    p{margin:0 0 10px}.muted{color:var(--muted)}
-    ul{margin:8px 0 12px 18px}li{margin:6px 0}
-    img{max-width:100%;height:auto;border-radius:14px;border:1px solid rgba(255,255,255,.10);display:block;margin:14px auto;background:rgba(255,255,255,.03);}
-    table{width:100%;border-collapse:collapse;margin-top:10px;overflow:hidden;border-radius:14px;border:1px solid rgba(255,255,255,.10);}
-    th,td{border-bottom:1px solid rgba(255,255,255,.10);padding:10px 12px;text-align:left;vertical-align:top;}
-    th{color:var(--muted);font-weight:600;background:rgba(255,255,255,.03)}
-    .skills-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
-    .skill-tag{background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.25);color:var(--accent);border-radius:999px;padding:4px 14px;font-size:13px;font-weight:600;}
-    .context-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:16px;}
-    .context-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;}
-    .context-item .icon{font-size:22px;margin-bottom:8px;}.context-item h3{font-size:14px;margin:0 0 4px;color:var(--accent2);}.context-item p{font-size:13px;color:var(--muted);margin:0;}
-    .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px;}
-    .metric-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;text-align:center;}
-    .metric-card .value{font-size:26px;font-weight:700;color:var(--accent);display:block;}.metric-card .label{font-size:12px;color:var(--muted);margin-top:4px;}
-    pre{margin:10px 0;overflow:auto;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.28);color:var(--text);font-size:13px;line-height:1.6;}
-    .callout{background:rgba(99,211,255,.07);border-left:3px solid var(--accent2);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:var(--muted);margin-top:14px;}
-    .success{background:rgba(99,255,162,.07);border-left:3px solid #63ffa2;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#a3ffcc;margin-top:14px;}
-    .warn{background:rgba(255,200,0,.07);border-left:3px solid #ffc800;border-radius:0 10px 10px 0;padding:12px 16px;font-size:13.5px;color:#ffe566;margin-top:14px;}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-    @media(max-width:700px){.grid2{grid-template-columns:1fr;}}
-    .ausblick-list{list-style:none;margin:12px 0 0;padding:0;}
-    .ausblick-list li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14.5px;}
-    .ausblick-list li:last-child{border-bottom:none;}
-    .ausblick-list .step{min-width:28px;height:28px;border-radius:50%;background:rgba(122,162,255,.15);border:1px solid rgba(122,162,255,.3);color:var(--accent);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
-    footer{text-align:center;color:var(--muted);font-size:12.5px;padding-bottom:30px;}
-    /* SVG arch */
-    .arch-node-teal rect{fill:rgba(29,158,117,.12);stroke:rgba(29,158,117,.35);stroke-width:1;}
-    .arch-node-purple rect{fill:rgba(127,119,221,.12);stroke:rgba(127,119,221,.35);stroke-width:1;}
-    .arch-node-blue rect{fill:rgba(55,138,221,.12);stroke:rgba(55,138,221,.35);stroke-width:1;}
-    .arch-node-amber rect{fill:rgba(186,117,23,.12);stroke:rgba(186,117,23,.35);stroke-width:1;}
-    .arch-node-coral rect{fill:rgba(216,90,48,.12);stroke:rgba(216,90,48,.35);stroke-width:1;}
-    .arch-node-gray rect{fill:rgba(136,135,128,.12);stroke:rgba(136,135,128,.35);stroke-width:1;}
-    .arch-node-green rect{fill:rgba(99,153,34,.12);stroke:rgba(99,153,34,.35);stroke-width:1;}
-    .arch-title{font-family:ui-sans-serif,system-ui,sans-serif;font-size:13px;font-weight:600;}
-    .arch-sub{font-family:ui-sans-serif,system-ui,sans-serif;font-size:11px;}
-    .arch-teal{fill:#5DCAA5;}.arch-purple{fill:#AFA9EC;}.arch-blue{fill:#85B7EB;}
-    .arch-amber{fill:#FAC775;}.arch-coral{fill:#F0997B;}.arch-gray{fill:#B4B2A9;}.arch-green{fill:#97C459;}
-    .arch-muted{fill:#9fb0c7;}.arch-white{fill:#e8eef7;}
-    .arch-divider{stroke:rgba(255,255,255,.12);stroke-dasharray:4 4;fill:none;}
-    .arch-subbox{fill:none;stroke:rgba(255,255,255,.10);stroke-width:0.5;}
+    .diagram { margin: 20px 0 10px; }
+
+    /* Architekturdiagramm (SVG) */
+    .arch-node-teal rect   { fill: rgba(29,158,117,.12);  stroke: rgba(29,158,117,.35);  stroke-width: 1; }
+    .arch-node-purple rect { fill: rgba(127,119,221,.12); stroke: rgba(127,119,221,.35); stroke-width: 1; }
+    .arch-node-blue rect   { fill: rgba(55,138,221,.12);  stroke: rgba(55,138,221,.35);  stroke-width: 1; }
+    .arch-node-amber rect  { fill: rgba(186,117,23,.12);  stroke: rgba(186,117,23,.35);  stroke-width: 1; }
+    .arch-node-coral rect  { fill: rgba(216,90,48,.12);   stroke: rgba(216,90,48,.35);   stroke-width: 1; }
+    .arch-node-gray rect   { fill: rgba(136,135,128,.12); stroke: rgba(136,135,128,.35); stroke-width: 1; }
+    .arch-node-green rect  { fill: rgba(99,153,34,.12);   stroke: rgba(99,153,34,.35);   stroke-width: 1; }
+    .arch-title { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 13px; font-weight: 600; }
+    .arch-sub   { font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11px; }
+    .arch-teal { fill: #5DCAA5; }
+    .arch-purple { fill: #AFA9EC; }
+    .arch-blue { fill: #85B7EB; }
+    .arch-amber { fill: #FAC775; }
+    .arch-coral { fill: #F0997B; }
+    .arch-gray { fill: #B4B2A9; }
+    .arch-muted { fill: #9fb0c7; }
+    .arch-divider { fill: none; stroke: rgba(255,255,255,.12); stroke-dasharray: 4 4; }
+    .arch-subbox { fill: none; stroke: rgba(255,255,255,.10); stroke-width: .5; }
   </style>
 </head>
-<body>
 
-<nav style="position:sticky;top:0;z-index:1000;background:rgba(11,15,25,.75);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.08);">
-  <ul style="list-style:none;margin:0;padding:10px 0;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
-    <li><a href="weitere.html" style="color:rgba(232,238,247,.88);font-weight:800;letter-spacing:.3px;padding:6px 14px;border-radius:999px;text-decoration:none;font-size:14px;display:inline-block;background:linear-gradient(135deg,rgba(122,162,255,.25),rgba(99,211,255,.18));border:1px solid rgba(122,162,255,.22);">Portfolio</a></li>
+<body>
+<nav class="site-nav">
+  <ul>
+    <li><a class="active" href="weitere.html">Portfolio</a></li>
   </ul>
 </nav>
 
 <header>
   <h1>MQTT · IIoT Sensor Simulator · Schemathesis</h1>
-  <p class="muted" style="font-size:15px;margin-top:6px;">IIoT-Sensor-Simulator mit MQTT-Protokoll, FastAPI REST-Schnittstelle und automatisierten API-Tests mit Schemathesis vollständig lauffähig mit Docker und GitHub Actions CI.</p>
-  <a href="https://github.com/meka23749/mqtt-iot-sensor-simulator" target="_blank" style="display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:8px 18px;border-radius:999px;background:rgba(122,162,255,.12);border:1px solid rgba(122,162,255,.28);color:#7aa2ff;font-size:14px;font-weight:700;text-decoration:none;">
-    <svg height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-    GitHub Repository
-  </a>
+  <p class="muted lead">IIoT-Sensor-Simulator mit MQTT-Protokoll, FastAPI REST-Schnittstelle und automatisierten API-Tests mit Schemathesis vollständig lauffähig mit Docker und GitHub Actions CI.</p>
+  <a class="btn-github" href="https://github.com/meka23749/mqtt-iot-sensor-simulator" target="_blank" rel="noopener">GitHub Repository</a>
 </header>
 
 <main>
@@ -89,7 +63,7 @@
   <h2>1- Architektur</h2>
   <p>Die Pipeline besteht aus drei Schichten: Sensorsimulation, Datenvermittlung via MQTT und REST API — alles durch automatisierte Tests in GitHub Actions abgesichert.</p>
 
-  <svg width="100%" viewBox="0 0 680 490" role="img" style="margin:20px 0 10px;">
+  <svg class="diagram" width="100%" viewBox="0 0 680 490" role="img">
     <title>MQTT IIoT Architektur</title>
     <desc>Drei-Schichten Architektur: Sensor Simulator, MQTT Broker, FastAPI REST API, getestet durch Schemathesis und pytest via GitHub Actions.</desc>
     <defs>
@@ -200,7 +174,7 @@
     <line x1="565" y1="328" x2="565" y2="350" stroke="rgba(99,153,34,.5)" stroke-width="1" fill="none" marker-end="url(#arr)"/>
   </svg>
 
-  <h3 style="margin-top:18px;">MQTT Topic Struktur</h3>
+  <h3 class="mt-18">MQTT Topic Struktur</h3>
   <table>
     <thead><tr><th>Topic</th><th>QoS</th><th>Payload</th></tr></thead>
     <tbody>
@@ -216,7 +190,7 @@
 <section class="hcard">
   <h2>2- MQTT Sensor Simulator</h2>
   <p>Der Simulator publiziert alle 5 Sekunden realistische Sensordaten für 3 Sensoren : typisch für industrielle Umgebungssensoren.</p>
-  <img src="images/mqtt_simulator.png" alt="MQTT Sensor Simulator läuft" />
+  <img src="images/mqtt_simulator.png" alt="MQTT Sensor Simulator läuft">
   <pre>
 sensors/sensor-001/temperature | value=31.33 | QoS=1
 sensors/sensor-001/humidity    | value=55.72 | QoS=1
@@ -228,8 +202,8 @@ sensors/sensor-003/temperature | value=29.68 | QoS=1</pre>
 <section class="hcard">
   <h2>3- FastAPI REST API &amp; OpenAPI 3.1</h2>
   <p>FastAPI generiert automatisch eine vollständige OpenAPI 3.1 Dokumentation aus dem Python-Code : kein manuelles Schreiben der Spec notwendig.</p>
-  <img src="images/openapi_docs.png" alt="OpenAPI 3.1 Dokumentation" />
-  <h3 style="margin-top:18px;">Endpoints</h3>
+  <img src="images/openapi_docs.png" alt="OpenAPI 3.1 Dokumentation" loading="lazy">
+  <h3 class="mt-18">Endpoints</h3>
   <table>
     <thead><tr><th>Method</th><th>Endpoint</th><th>Response</th><th>Beschreibung</th></tr></thead>
     <tbody>
@@ -239,21 +213,21 @@ sensors/sensor-003/temperature | value=29.68 | QoS=1</pre>
       <tr><td>GET</td><td>/sensors/{id}/measurements</td><td>200 / 404</td><td>Einzelne Messwerte eines Sensors</td></tr>
     </tbody>
   </table>
-  <div class="grid2" style="margin-top:18px;">
-    <div><h3>Sensor Liste</h3><img src="images/sensors_list.png" alt="Sensors List" /></div>
-    <div><h3>Sensor Detail</h3><img src="images/sensor_detail.png" alt="Sensor Detail" /></div>
+  <div class="grid2 mt-18">
+    <div><h3>Sensor Liste</h3><img src="images/sensors_list.png" alt="Sensors List" loading="lazy"></div>
+    <div><h3>Sensor Detail</h3><img src="images/sensor_detail.png" alt="Sensor Detail" loading="lazy"></div>
   </div>
-  <h3 style="margin-top:18px;">Measurements Endpoint</h3>
-  <img src="images/sensor_measurements.png" alt="Sensor Measurements" />
+  <h3 class="mt-18">Measurements Endpoint</h3>
+  <img src="images/sensor_measurements.png" alt="Sensor Measurements" loading="lazy">
 </section>
 
 <section class="hcard">
   <h2>4- Automatisierte Tests mit Schemathesis</h2>
   <p>Schemathesis generiert automatisch Testfälle aus der OpenAPI-Spezifikation und testet die API mit validen, invaliden und Edge-Case-Eingaben, API Fuzzing.</p>
   <h3>Erster Durchlauf : Bug gefunden</h3>
-  <img src="images/schemathesis_results.png" alt="Schemathesis erste Ergebnisse" />
+  <img src="images/schemathesis_results.png" alt="Schemathesis erste Ergebnisse" loading="lazy">
   <div class="warn">⚠️ Schemathesis sendete Unicode-Zeichen als sensor_id und erhielt 404 — aber die Spec dokumentierte nur 200 oder 422. Undokumentierter Status-Code = Spec-Fehler → sofort behoben.</div>
-  <h3 style="margin-top:18px;">Fix : 404 in OpenAPI Spec dokumentiert</h3>
+  <h3 class="mt-18">Fix : 404 in OpenAPI Spec dokumentiert</h3>
   <pre>
 @app.get("/sensors/{sensor_id}",
     response_model=SensorReading,
@@ -261,9 +235,9 @@ sensors/sensor-003/temperature | value=29.68 | QoS=1</pre>
     responses={404: {"description": "Sensor not found"}}
 )
 def get_sensor(sensor_id: str): ...</pre>
-  <h3 style="margin-top:18px;">Zweiter Durchlauf : No issues found</h3>
-  <img src="images/schemathesis_fixed.png" alt="Schemathesis alle Tests bestehen" />
-  <div class="metrics-grid" style="margin-top:18px;">
+  <h3 class="mt-18">Zweiter Durchlauf : No issues found</h3>
+  <img src="images/schemathesis_fixed.png" alt="Schemathesis alle Tests bestehen" loading="lazy">
+  <div class="metrics-grid mt-18">
     <div class="metric-card"><span class="value">2170</span><div class="label">Tests generiert</div></div>
     <div class="metric-card"><span class="value">4/4</span><div class="label">Endpoints getestet</div></div>
     <div class="metric-card"><span class="value">758</span><div class="label">Stateful Scenarios</div></div>
@@ -285,13 +259,11 @@ def get_sensor(sensor_id: str): ...</pre>
       <tr><td>Containerisierung</td><td>Docker + Docker Compose</td><td>✅</td></tr>
     </tbody>
   </table>
-  
 </section>
-
-
 </main>
 
 <footer>© <span id="year"></span> – MQTT · IIoT Sensor Simulator · Schemathesis | Steve Meka</footer>
 <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+
 </body>
 </html>
