@@ -1,4 +1,4 @@
-# Portfolio – Steve Meka
+# Portfolio Steve Meka
 
 Persönliche Portfolio-Website (Embedded Software Engineering), veröffentlicht mit GitHub Pages:
 **https://meka23749.github.io/CVV/**
