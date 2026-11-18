@@ -1,0 +1,72 @@
+/* ==========================================================================
+   Basis – von allen Seiten geladen
+   ========================================================================== */
+
+:root {
+  --bg: #0b0f19;
+  --text: #e8eef7;
+  --muted: #9fb0c7;
+  --accent: #7aa2ff;
+  --accent2: #63d3ff;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  background-color: var(--bg);
+}
+
+/* --- Navigation ---------------------------------------------------------- */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(11, 15, 25, .75);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.site-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 0;
+  list-style: none;
+}
+
+.site-nav li {
+  margin: 0;
+}
+
+.site-nav a {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: rgba(232, 238, 247, .88);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .3px;
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  background: rgba(255, 255, 255, .06);
+  text-decoration: none;
+}
+
+.site-nav a.active {
+  background: linear-gradient(135deg, rgba(122, 162, 255, .25), rgba(99, 211, 255, .18));
+  border-color: rgba(122, 162, 255, .22);
+}

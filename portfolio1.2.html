@@ -1,157 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Projekt: DC Motor Position Control in MATLAB/Simulink</title>
-
-  <style>
-    :root{
-      --bg:#0b0f19; --card:#121a2a; --muted:#9fb0c7; --text:#e8eef7;
-      --accent:#7aa2ff; --accent2:#63d3ff; --border:rgba(255,255,255,.08);
-      --radius:16px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --max: 1050px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% 0%, rgba(122,162,255,.20), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(99,211,255,.16), transparent 55%),
-        var(--bg);
-      color:var(--text);
-      line-height:1.6;
-    }
-    a{color:var(--accent2); text-decoration:none}
-    a:hover{text-decoration:underline}
-    header, main, footer{max-width:var(--max); margin:auto; padding:32px 20px}
-    .hcard{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--border);
-      border-radius: var(--radius);
-      padding:28px;
-      box-shadow: var(--shadow);
-      margin-bottom:18px;
-    }
-    h1,h2,h3{margin:0 0 10px; color:var(--accent); letter-spacing:.2px}
-    h1{font-size: clamp(24px, 3vw, 36px)}
-    h2{font-size: 18px}
-    h3{font-size: 16px; color: var(--accent2)}
-    p{margin: 0 0 10px}
-    .muted{color:var(--muted)}
-    ul{margin: 8px 0 12px 18px}
-    li{margin: 6px 0}
-    img{
-      max-width:100%;
-      height:auto;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      display:block;
-      margin: 14px auto;
-      background: rgba(255,255,255,.03);
-    }
-    table{
-      width:100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      overflow:hidden;
-      border-radius: 14px;
-      border:1px solid rgba(255,255,255,.10);
-    }
-    th, td{
-      border-bottom:1px solid rgba(255,255,255,.10);
-      padding:10px 12px;
-      text-align:left;
-      vertical-align:top;
-    }
-    th{color:var(--muted); font-weight:600; background: rgba(255,255,255,.03)}
-
-    /* Skills tags */
-    .skills-row{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      margin-top:14px;
-    }
-    .skill-tag{
-      background: rgba(122,162,255,.12);
-      border: 1px solid rgba(122,162,255,.25);
-      color: var(--accent);
-      border-radius: 999px;
-      padding: 4px 14px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    /* Kontext cards */
-    .context-grid{
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 14px;
-      margin-top: 16px;
-    }
-    .context-item{
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .context-item .icon{ font-size: 22px; margin-bottom: 8px; }
-    .context-item h3{ font-size: 14px; margin: 0 0 4px; color: var(--accent2); }
-    .context-item p{ font-size: 13px; color: var(--muted); margin: 0; }
-
-    /* Ausblick list */
-    .ausblick-list{
-      list-style: none;
-      margin: 12px 0 0;
-      padding: 0;
-    }
-    .ausblick-list li{
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      font-size: 14.5px;
-    }
-    .ausblick-list li:last-child{ border-bottom: none; }
-    .ausblick-list .step{
-      min-width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(122,162,255,.15);
-      border: 1px solid rgba(122,162,255,.3);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    /* limit note */
-    .limit-note{
-      background: rgba(99,211,255,.07);
-      border-left: 3px solid var(--accent2);
-      border-radius: 0 10px 10px 0;
-      padding: 12px 16px;
-      font-size: 13.5px;
-      color: var(--muted);
-      margin-top: 14px;
-    }
-
-    footer{
-      text-align:center;
-      color:var(--muted);
-      font-size:12.5px;
-      padding-bottom:30px;
-    }
-  </style>
-
+  <meta name="description" content="Modellierung, Reglerentwurf und Simulation eines DC-Motors mit PID-Regler zur präzisen Positionsregelung von offenem Kreis bis optimiertem geschlossenen Regelkreis.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/project.css">
   <script>
     window.MathJax = {
       tex: {inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']]}
@@ -161,40 +17,20 @@
 </head>
 
 <body>
-
-<nav style="
-  position:sticky; top:0; z-index:1000;
-  background:rgba(11,15,25,.75);
-  backdrop-filter:blur(10px);
-  border-bottom:1px solid rgba(255,255,255,.08);
-">
-  <ul style="
-    list-style:none; margin:0; padding:10px 0;
-    display:flex; justify-content:center; gap:8px; flex-wrap:wrap;
-  ">
-    <li>
-      <a href="weitere.html" style="
-        color:rgba(232,238,247,.88); font-weight:800; letter-spacing:.3px;
-        padding:6px 14px; border-radius:999px; text-decoration:none;
-        font-size:14px; display:inline-block;
-        background:linear-gradient(135deg, rgba(122,162,255,.25), rgba(99,211,255,.18));
-        border:1px solid rgba(122,162,255,.22);
-      ">Portfolio</a>
-    </li>
+<nav class="site-nav">
+  <ul>
+    <li><a class="active" href="weitere.html">Portfolio</a></li>
   </ul>
 </nav>
 
 <header>
   <h1>DC Motor Position Control in MATLAB/Simulink</h1>
-  <p class="muted" style="font-size:15px; margin-top:6px;">
+  <p class="muted lead">
     Modellierung, Reglerentwurf und Simulation eines DC-Motors mit PID-Regler zur präzisen Positionsregelung von offenem Kreis bis optimiertem geschlossenen Regelkreis.
   </p>
-  
 </header>
 
 <main>
-
-
 
   <!-- ===== 1. THEORETISCHE GRUNDLAGEN ===== -->
   <section class="hcard">
@@ -204,9 +40,9 @@
       wird durch zwei gekoppelte Gleichungen beschrieben:
     </p>
 
-    <img src="https://stevkmef.com/images/dcm1.png" alt="DC Motor Aufbau" />
+    <img src="images/dcm1.png" alt="DC Motor Aufbau">
 
-    <h3 style="margin-top:18px;">Elektrische Gleichung</h3>
+    <h3 class="mt-18">Elektrische Gleichung</h3>
     <p>Aus dem 2. Kirchhoffschen Gesetz und der Faradayschen Induktionsgleichung:</p>
 
     \[ V(t) = L \frac{di(t)}{dt} + R\,i(t) + K_e\,\omega(t) \]
@@ -222,7 +58,7 @@
       <li>\( K_e \frac{d\theta}{dt} \) - Gegen-EMK, proportional zur Winkelgeschwindigkeit</li>
     </ul>
 
-    <h3 style="margin-top:18px;">Mechanische Gleichung</h3>
+    <h3 class="mt-18">Mechanische Gleichung</h3>
     <p>Aus dem 2. Newtonschen Gesetz für Rotation:</p>
 
     \[ J \frac{d^2\theta}{dt^2} = K_t\,i(t) - b\,\frac{d\theta}{dt} \]
@@ -233,7 +69,7 @@
       <li>\( b\,\omega(t) \) - viskose Dämpfung (Reibungsverluste)</li>
     </ul>
 
-    <h3 style="margin-top:18px;">PID-Regler</h3>
+    <h3 class="mt-18">PID-Regler</h3>
     <p>Ziel: Positionsfehler \( e(t) = \theta_{ref}(t) - \theta(t) \) minimieren.</p>
 
     \[ u(t) = K_p\,e(t) + K_i \int e(t)\,dt + K_d\,\frac{de(t)}{dt} \]
@@ -249,8 +85,8 @@
     <h2>2- Simulink-Modell &amp; Experimente</h2>
 
     <h3>Experiment 1 : Ohne Regler (offener Kreis)</h3>
-    <img src="https://stevkmef.com/images/dcmohne.png" alt="Simulink Modell ohne Regler" />
-    <img src="https://stevkmef.com/images/ergeb1.png" alt="Ergebnis ohne Regler" />
+    <img src="images/dcmohne.png" alt="Simulink Modell ohne Regler" loading="lazy">
+    <img src="images/ergeb1.png" alt="Ergebnis ohne Regler" loading="lazy">
 
     <p>Beobachtungen:</p>
     <ul>
@@ -262,9 +98,9 @@
       → Ein Regler ist zwingend notwendig, um die Position an einem Sollwert zu halten.
     </p>
 
-    <h3 style="margin-top:22px;">Experiment 2 : PI-Regler (Kp=1, Ki=1, Kd=0)</h3>
-    <img src="https://stevkmef.com/images/mitregler.png" alt="Simulink Modell mit Regler" />
-    <img src="https://stevkmef.com/images/ergeb2.png" alt="Ergebnis PI-Regler" />
+    <h3 class="mt-22">Experiment 2 : PI-Regler (Kp=1, Ki=1, Kd=0)</h3>
+    <img src="images/mitregler.png" alt="Simulink Modell mit Regler" loading="lazy">
+    <img src="images/ergeb2.png" alt="Ergebnis PI-Regler" loading="lazy">
 
     <p>Beobachtungen:</p>
     <ul>
@@ -273,9 +109,9 @@
       <li>Kein D-Anteil → fehlende Dämpfung → Nachschwingen.</li>
     </ul>
 
-    <h3 style="margin-top:22px;">Experiment 3 : Optimierter PID-Regler (Kp=1, Ki=0.5, Kd=0.05)</h3>
-    <img src="https://stevkmef.com/images/mitregler.png" alt="Simulink Modell PID optimiert" />
-    <img src="https://stevkmef.com/images/ergeb3.png" alt="Ergebnis PID optimiert" />
+    <h3 class="mt-22">Experiment 3 : Optimierter PID-Regler (Kp=1, Ki=0.5, Kd=0.05)</h3>
+    <img src="images/mitregler.png" alt="Simulink Modell PID optimiert" loading="lazy">
+    <img src="images/ergeb3.png" alt="Ergebnis PID optimiert" loading="lazy">
 
     <p>Beobachtungen:</p>
     <ul>
@@ -325,7 +161,7 @@
       </tbody>
     </table>
 
-    <h3 style="margin-top:22px;">Grenzen des Modells</h3>
+    <h3 class="mt-22">Grenzen des Modells</h3>
     <ul>
       <li>Lineares Modell : keine Sättigung, keine Nichtlinearitäten berücksichtigt</li>
       <li>Keine äußere Last modelliert</li>
@@ -337,7 +173,7 @@
       (Messung von Strom, Spannung und Position) wäre der nächste Schritt zur Verifikation.
     </div>
 
-    <h3 style="margin-top:22px;">Skills</h3>
+    <h3 class="mt-22">Skills</h3>
     <div class="skills-row">
       <span class="skill-tag">MATLAB</span>
       <span class="skill-tag">Simulink</span>
@@ -350,10 +186,6 @@
       <span class="skill-tag">Technische Dokumentation</span>
     </div>
   </section>
-
-  <!-- ===== 4. AUSBLICK ===== -->
-  
-
 </main>
 
 <footer>
