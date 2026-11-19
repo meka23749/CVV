@@ -1,0 +1,50 @@
+name: Portfolio synchronisieren
+
+# Erstellt Karten und Projektseiten fuer alle Repos mit dem Topic "portfolio".
+# Laeuft alle 6 Stunden von selbst. Sofort starten: Actions > Portfolio synchronisieren > Run workflow.
+on:
+  schedule:
+    - cron: "23 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/portfolio_sync.py"
+      - ".github/workflows/portfolio-sync.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: portfolio-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Abhaengigkeiten installieren
+        run: pip install "markdown>=3.5,<4" "pyyaml>=6,<7"
+
+      - name: Karten und Seiten erzeugen
+        run: python tools/portfolio_sync.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Aenderungen veroeffentlichen
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Portfolio automatisch aktualisiert"
+            git push
+          else
+            echo "Keine Aenderungen."
+          fi

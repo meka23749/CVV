@@ -1,0 +1,13 @@
+# Vorlage: als "portfolio.yml" ins Hauptverzeichnis des PROJEKT-Repos legen (optional).
+# Ohne diese Datei nimmt die Website: Titel = erste "# Ueberschrift" der README,
+# Beschreibung = Repo-Beschreibung, Tags = GitHub-Topics.
+
+titel: "CAN-Bus Logger · STM32 · Python"          # Titel auf Karte und Projektseite
+beschreibung: "Ein Satz, der das Projekt erklaert."  # erscheint unter dem Titel
+tags: [STM32, CAN, C, Python, pytest, GitHub Actions] # hoechstens 6
+farbe: embedded      # embedded | devops | web | sim   (Hintergrund der Karte)
+bereich: portfolio   # portfolio = embedded.html, weitere = weitere.html
+seite: true          # false = Karte verlinkt direkt auf GitHub, ohne eigene Seite
+art: "Privates Projekt"   # kleiner Hinweis unter der Beschreibung (optional)
+# slug: can-bus-logger    # Dateiname der Seite (Standard: Repo-Name)
+# anzeigen: false         # Projekt voruebergehend ausblenden
